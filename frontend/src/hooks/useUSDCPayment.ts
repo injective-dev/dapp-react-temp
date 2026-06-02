@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useReadContract, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import { parseUnits, formatUnits, maxUint256 } from "viem";
-import { CONTRACT_ADDRESSES, MOCK_USDC_ABI, PAYMENT_PROCESSOR_ABI } from "@/config/contracts";
+import { CONTRACT_ADDRESSES, ERC20_ABI, PAYMENT_PROCESSOR_ABI } from "@/config/contracts";
 import { useAccount } from "wagmi";
 
 export interface PaymentRecord {
@@ -18,19 +18,19 @@ export function useUSDCPayment() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Read USDC balance
+  // Read USDC balance (Circle testnet USDC)
   const { data: usdcBalance, refetch: refetchBalance } = useReadContract({
-    address: CONTRACT_ADDRESSES.MOCK_USDC,
-    abi: MOCK_USDC_ABI,
+    address: CONTRACT_ADDRESSES.USDC,
+    abi: ERC20_ABI,
     functionName: "balanceOf",
     args: address ? [address] : undefined,
     query: { enabled: !!address },
   });
 
-  // Read allowance
+  // Read allowance for payment processor
   const { data: allowance, refetch: refetchAllowance } = useReadContract({
-    address: CONTRACT_ADDRESSES.MOCK_USDC,
-    abi: MOCK_USDC_ABI,
+    address: CONTRACT_ADDRESSES.USDC,
+    abi: ERC20_ABI,
     functionName: "allowance",
     args: address ? [address, CONTRACT_ADDRESSES.PAYMENT_PROCESSOR] : undefined,
     query: { enabled: !!address },
@@ -52,42 +52,19 @@ export function useUSDCPayment() {
     functionName: "minimumPayment",
   });
 
-  // Wait for tx
-  const { isSuccess: isTxSuccess } = useWaitForTransactionReceipt({
-    hash: txHash,
-  });
+  // Wait for tx confirmation
+  const { isSuccess: isTxSuccess } = useWaitForTransactionReceipt({ hash: txHash });
 
   /**
-   * Mint test USDC from faucet (1000 USDC)
-   */
-  const mintTestUSDC = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const hash = await writeContractAsync({
-        address: CONTRACT_ADDRESSES.MOCK_USDC,
-        abi: MOCK_USDC_ABI,
-        functionName: "faucet",
-      });
-      setTxHash(hash);
-      await refetchBalance();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Faucet mint failed");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  /**
-   * Approve payment processor to spend USDC
+   * Approve payment processor to spend USDC on user's behalf
    */
   const approveUSDC = async () => {
     setIsLoading(true);
     setError(null);
     try {
       const hash = await writeContractAsync({
-        address: CONTRACT_ADDRESSES.MOCK_USDC,
-        abi: MOCK_USDC_ABI,
+        address: CONTRACT_ADDRESSES.USDC,
+        abi: ERC20_ABI,
         functionName: "approve",
         args: [CONTRACT_ADDRESSES.PAYMENT_PROCESSOR, maxUint256],
       });
@@ -104,6 +81,9 @@ export function useUSDCPayment() {
    * Send a USDC payment
    * @param amountStr — human-readable amount (e.g. "10" for 10 USDC)
    * @param memo — optional payment note
+   *
+   * Automatically approves if allowance is insufficient.
+   * Get testnet USDC from: https://faucet.circle.com/
    */
   const pay = async (amountStr: string, memo: string) => {
     setIsLoading(true);
@@ -144,7 +124,6 @@ export function useUSDCPayment() {
     // Payment history
     paymentHistory: (paymentHistory as PaymentRecord[] | undefined) ?? [],
     // Actions
-    mintTestUSDC,
     approveUSDC,
     pay,
     // State

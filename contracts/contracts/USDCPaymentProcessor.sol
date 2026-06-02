@@ -9,13 +9,20 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 /**
  * @title USDCPaymentProcessor
  * @dev Accepts USDC payments on Injective EVM testnet.
+ *      Uses the official Circle USDC deployment on Injective.
  *      Tracks payment history per address.
  *      Owner can withdraw accumulated USDC.
+ *
+ * Injective Testnet USDC: 0x0C382e685bbeeFE5d3d9C29e29E341fEE8E84C5d
+ * Get testnet USDC from Circle Faucet: https://faucet.circle.com/
  *
  * Deployed on Injective EVM Testnet (Chain ID: 1440002)
  */
 contract USDCPaymentProcessor is Ownable, ReentrancyGuard {
     using SafeERC20 for IERC20;
+
+    /// @notice Official Circle USDC on Injective EVM Testnet
+    address public constant USDC_TESTNET = 0x0C382e685bbeeFE5d3d9C29e29E341fEE8E84C5d;
 
     IERC20 public immutable usdc;
     uint256 public minimumPayment; // in USDC (6 decimals)
@@ -30,7 +37,7 @@ contract USDCPaymentProcessor is Ownable, ReentrancyGuard {
 
     // Maps user address to their payment records
     mapping(address => Payment[]) private paymentHistory;
-    // All payment records for global lookup
+    // All payment records
     Payment[] public allPayments;
 
     event PaymentReceived(
@@ -45,8 +52,11 @@ contract USDCPaymentProcessor is Ownable, ReentrancyGuard {
     error PaymentBelowMinimum(uint256 sent, uint256 minimum);
     error NoFundsToWithdraw();
 
-    constructor(address _usdc, uint256 _minimumPayment) Ownable(msg.sender) {
-        usdc = IERC20(_usdc);
+    /**
+     * @param _minimumPayment Minimum payment in USDC units (e.g. 1000000 = 1 USDC)
+     */
+    constructor(uint256 _minimumPayment) Ownable(msg.sender) {
+        usdc = IERC20(USDC_TESTNET);
         minimumPayment = _minimumPayment;
     }
 
@@ -54,6 +64,9 @@ contract USDCPaymentProcessor is Ownable, ReentrancyGuard {
      * @dev User pays USDC to this contract.
      * @param amount Amount in USDC (6 decimals). E.g., 1000000 = 1 USDC
      * @param memo Optional payment note/reference
+     *
+     * Before calling this, user must approve this contract:
+     *   usdc.approve(address(paymentProcessor), amount)
      */
     function pay(uint256 amount, string calldata memo) external nonReentrant {
         if (amount < minimumPayment) {

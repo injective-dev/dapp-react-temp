@@ -1,18 +1,23 @@
 /**
- * Contract addresses on Injective EVM Testnet
- * Update these after running: cd contracts && npm run deploy:testnet
+ * Official Circle USDC on Injective EVM Testnet
+ * Source: https://docs.injective.network/developers-defi/usdc-stablecoin#testnet
+ * Get testnet USDC: https://faucet.circle.com/
+ */
+export const USDC_TESTNET_ADDRESS = "0x0C382e685bbeeFE5d3d9C29e29E341fEE8E84C5d" as const;
+
+/**
+ * USDCPaymentProcessor address — fill in after running: cd contracts && npm run deploy:testnet
  */
 export const CONTRACT_ADDRESSES = {
-  MOCK_USDC: (import.meta.env.VITE_MOCK_USDC_ADDRESS ||
-    "0x0000000000000000000000000000000000000000") as `0x${string}`,
+  USDC: (import.meta.env.VITE_USDC_ADDRESS || USDC_TESTNET_ADDRESS) as `0x${string}`,
   PAYMENT_PROCESSOR: (import.meta.env.VITE_PAYMENT_PROCESSOR_ADDRESS ||
     "0x0000000000000000000000000000000000000000") as `0x${string}`,
 };
 
 /**
- * MockUSDC ABI — only the functions we need in the frontend
+ * Standard ERC20 ABI — functions needed for USDC interactions
  */
-export const MOCK_USDC_ABI = [
+export const ERC20_ABI = [
   {
     name: "balanceOf",
     type: "function",
@@ -41,26 +46,18 @@ export const MOCK_USDC_ABI = [
     outputs: [{ name: "", type: "uint256" }],
   },
   {
-    name: "faucet",
-    type: "function",
-    stateMutability: "nonpayable",
-    inputs: [],
-    outputs: [],
-  },
-  {
     name: "decimals",
     type: "function",
-    stateMutability: "pure",
+    stateMutability: "view",
     inputs: [],
     outputs: [{ name: "", type: "uint8" }],
   },
   {
-    name: "FaucetMint",
-    type: "event",
-    inputs: [
-      { name: "recipient", type: "address", indexed: true },
-      { name: "amount", type: "uint256", indexed: false },
-    ],
+    name: "symbol",
+    type: "function",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ name: "", type: "string" }],
   },
 ] as const;
 
@@ -116,6 +113,13 @@ export const PAYMENT_PROCESSOR_ABI = [
     stateMutability: "view",
     inputs: [],
     outputs: [{ name: "", type: "uint256" }],
+  },
+  {
+    name: "USDC_TESTNET",
+    type: "function",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ name: "", type: "address" }],
   },
   {
     name: "PaymentReceived",

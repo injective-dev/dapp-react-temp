@@ -80,13 +80,14 @@ dapp-react-temp/
 
 Deployed on **Injective EVM Testnet** (Chain ID: `1440002`).
 
-### MockUSDC
+### USDC (Circle Native)
 
-A testnet ERC20 with 6 decimals (matching real USDC). Includes a public **faucet** — anyone can mint 1000 USDC for testing.
+The official Circle USDC deployment on Injective testnet (`0x0C382e685bbeeFE5d3d9C29e29E341fEE8E84C5d`). Get testnet USDC from the [Circle Faucet](https://faucet.circle.com/).
 
 ```solidity
 // Get 1000 test USDC
-mockUSDC.faucet();
+// USDC is the real Circle testnet deployment
+// Get testnet USDC: https://faucet.circle.com/
 ```
 
 ### USDCPaymentProcessor
@@ -307,7 +308,8 @@ Full MCP docs: [`mcp/README.md`](./mcp/README.md)
 | Injective Developer Docs | https://docs.injective.network/ |
 | Injective EVM Docs | https://docs.injective.network/developers/evm |
 | Injective MCP Server | https://github.com/InjectiveLabs/mcp-server |
-| Testnet Faucet | https://testnet.faucet.injective.network/ |
+| Circle USDC Faucet | https://faucet.circle.com/ |
+| Injective INJ Faucet | https://testnet.faucet.injective.network/ |
 | Testnet Explorer | https://testnet.explorer.injective.network/ |
 | Mainnet Explorer | https://explorer.injective.network/ |
 | Injective Discord | https://discord.gg/injective |

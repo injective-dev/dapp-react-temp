@@ -11,7 +11,6 @@ export function PaymentForm() {
   const {
     usdcBalanceFormatted,
     minimumPaymentFormatted,
-    mintTestUSDC,
     pay,
     isLoading,
     error,
@@ -27,7 +26,7 @@ export function PaymentForm() {
       setAmount("");
       setMemo("");
     } catch {
-      // error is already set in the hook
+      // error is set in the hook
     }
   };
 
@@ -53,18 +52,24 @@ export function PaymentForm() {
         <h2 className="text-lg font-semibold text-white">Pay with USDC</h2>
         <div className="text-sm text-gray-400">
           Balance:{" "}
-          <span className="text-white font-medium">{parseFloat(usdcBalanceFormatted).toFixed(2)} USDC</span>
+          <span className="text-white font-medium">
+            {parseFloat(usdcBalanceFormatted).toFixed(2)} USDC
+          </span>
         </div>
       </div>
 
-      {/* Faucet button */}
-      <button
-        onClick={mintTestUSDC}
-        disabled={isLoading}
-        className="w-full bg-purple-900/40 hover:bg-purple-800/50 text-purple-300 border border-purple-800/50 font-medium py-2.5 rounded-lg transition-colors text-sm disabled:opacity-50"
+      {/* Circle Faucet link */}
+      <a
+        href="https://faucet.circle.com/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center justify-center gap-2 w-full bg-blue-900/30 hover:bg-blue-800/40 text-blue-300 border border-blue-800/50 font-medium py-2.5 rounded-lg transition-colors text-sm"
       >
-        {isLoading ? "Processing..." : "🚰 Get Test USDC (Faucet — 1000 USDC)"}
-      </button>
+        💧 Get Testnet USDC — Circle Faucet
+        <svg className="w-3.5 h-3.5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+        </svg>
+      </a>
 
       <div className="border-t border-injective-border" />
 
@@ -110,7 +115,7 @@ export function PaymentForm() {
           <div className="bg-green-900/30 border border-green-800/50 rounded-lg px-4 py-3 text-green-400 text-sm">
             ✅ Payment sent!{" "}
             <a
-              href={`${import.meta.env.VITE_EXPLORER_URL || "https://testnet.explorer.injective.network/"}/tx/${success}`}
+              href={`https://testnet.blockscout.injective.network/tx/${success}`}
               target="_blank"
               rel="noopener noreferrer"
               className="underline hover:text-green-300"
@@ -130,9 +135,7 @@ export function PaymentForm() {
       </form>
 
       {txHash && (
-        <p className="text-xs text-gray-500 break-all">
-          Tx: {txHash}
-        </p>
+        <p className="text-xs text-gray-500 break-all">Tx: {txHash}</p>
       )}
     </div>
   );
