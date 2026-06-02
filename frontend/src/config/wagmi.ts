@@ -3,12 +3,12 @@ import { defineChain } from "viem";
 import { injected, metaMask, walletConnect } from "wagmi/connectors";
 
 /**
- * Injective EVM Testnet chain definition
- * Chain ID: 1440002 (0x15F902)
- * RPC: https://testnet.svm.injective.network/
+ * Injective EVM Testnet
+ * Chain ID: 1439 | RPC: https://k8s.testnet.json-rpc.injective.network/
+ * Source: https://docs.injective.network/developers-evm/network-information
  */
 export const injectiveTestnet = defineChain({
-  id: 1440002,
+  id: 1439,
   name: "Injective Testnet",
   nativeCurrency: {
     name: "Injective",
@@ -18,40 +18,39 @@ export const injectiveTestnet = defineChain({
   rpcUrls: {
     default: {
       http: [
-        import.meta.env.VITE_RPC_URL || "https://testnet.svm.injective.network/",
+        import.meta.env.VITE_RPC_URL || "https://k8s.testnet.json-rpc.injective.network/",
       ],
     },
   },
   blockExplorers: {
     default: {
       name: "Injective Testnet Explorer",
-      url:
-        import.meta.env.VITE_EXPLORER_URL ||
-        "https://testnet.explorer.injective.network/",
+      url: import.meta.env.VITE_EXPLORER_URL || "https://testnet.blockscout.injective.network/",
     },
   },
   testnet: true,
 });
 
 /**
- * Injective EVM Mainnet — uncomment when ready for production
+ * Injective EVM Mainnet
+ * Chain ID: 1776 | RPC: https://sentry.evm-rpc.injective.network/
  */
 // export const injectiveMainnet = defineChain({
-//   id: 1738,
+//   id: 1776,
 //   name: "Injective",
 //   nativeCurrency: { name: "Injective", symbol: "INJ", decimals: 18 },
 //   rpcUrls: {
-//     default: { http: ["https://svm.injective.network/"] },
+//     default: { http: ["https://sentry.evm-rpc.injective.network/"] },
 //   },
 //   blockExplorers: {
-//     default: { name: "Injective Explorer", url: "https://explorer.injective.network/" },
+//     default: { name: "Injective Explorer", url: "https://blockscout.injective.network/" },
 //   },
 // });
 
 export const wagmiConfig = createConfig({
   chains: [injectiveTestnet],
   connectors: [
-    injected(), // MetaMask & other injected wallets
+    injected(),
     metaMask(),
     walletConnect({
       projectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || "YOUR_PROJECT_ID",

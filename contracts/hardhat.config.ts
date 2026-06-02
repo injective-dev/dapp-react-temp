@@ -10,39 +10,36 @@ const config: HardhatUserConfig = {
   solidity: {
     version: "0.8.20",
     settings: {
-      optimizer: {
-        enabled: true,
-        runs: 200,
-      },
+      optimizer: { enabled: true, runs: 200 },
     },
   },
   networks: {
-    // Injective EVM Testnet
+    // Injective EVM Testnet — Chain ID: 1439
+    // RPC: https://k8s.testnet.json-rpc.injective.network/
     injectiveTestnet: {
-      url: process.env.INJECTIVE_TESTNET_RPC || "https://testnet.svm.injective.network/",
-      chainId: 1440002,
+      url: process.env.INJECTIVE_TESTNET_RPC || "https://k8s.testnet.json-rpc.injective.network/",
+      chainId: 1439,
       accounts: [PRIVATE_KEY],
-      gasPrice: "auto",
     },
-    // Injective EVM Mainnet
+    // Injective EVM Mainnet — Chain ID: 1776
+    // RPC: https://sentry.evm-rpc.injective.network/
     injectiveMainnet: {
-      url: "https://svm.injective.network/",
-      chainId: 1738,
+      url: "https://sentry.evm-rpc.injective.network/",
+      chainId: 1776,
       accounts: [PRIVATE_KEY],
-      gasPrice: "auto",
     },
   },
   etherscan: {
     apiKey: {
-      injectiveTestnet: "placeholder", // Injective explorer doesn't require API key
+      injectiveTestnet: "placeholder",
     },
     customChains: [
       {
         network: "injectiveTestnet",
-        chainId: 1440002,
+        chainId: 1439,
         urls: {
-          apiURL: "https://testnet.explorer.injective.network/api",
-          browserURL: "https://testnet.explorer.injective.network",
+          apiURL: "https://testnet.blockscout-api.injective.network/api",
+          browserURL: "https://testnet.blockscout.injective.network",
         },
       },
     ],

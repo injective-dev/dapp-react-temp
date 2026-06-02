@@ -29,6 +29,17 @@ cd ../frontend && npm install && npm run dev
 
 ---
 
+## Network Info
+
+| | Testnet | Mainnet |
+|---|---|---|
+| Chain ID | `1439` | `1776` |
+| RPC | `https://k8s.testnet.json-rpc.injective.network/` | `https://sentry.evm-rpc.injective.network/` |
+| Explorer | [testnet.blockscout.injective.network](https://testnet.blockscout.injective.network/) | [blockscout.injective.network](https://blockscout.injective.network/) |
+| USDC | `0x0C382e685bbeeFE5d3d9C29e29E341fEE8E84C5d` | `0xa00C59fF5a080D2b954d0c75e46E22a0c371235a` |
+
+---
+
 ## Project Structure
 
 ```
@@ -48,16 +59,12 @@ cd ../frontend && npm install && npm run dev
 
 ## Contracts
 
-**Network:** Injective EVM Testnet · Chain ID `1440002`
-
-**USDC:** `0x0C382e685bbeeFE5d3d9C29e29E341fEE8E84C5d` (official Circle deployment)
-
 ### USDCPaymentProcessor
 
 Accepts USDC, tracks payment history, owner can withdraw.
 
 ```solidity
-pay(uint256 amount, string memo)       // user pays USDC
+pay(uint256 amount, string memo)       // user pays USDC (approve first)
 getPaymentHistory(address user)        // view history
 withdraw()                             // owner withdraws (onlyOwner)
 setMinimumPayment(uint256 amount)      // update minimum (onlyOwner)
@@ -65,8 +72,8 @@ setMinimumPayment(uint256 amount)      // update minimum (onlyOwner)
 
 ```bash
 cd contracts
-npm run compile       # compile
-npm run test          # run tests
+npm run compile
+npm run test
 npm run deploy:testnet
 ```
 
@@ -104,16 +111,16 @@ See [`mcp/README.md`](./mcp/README.md) for full setup guide.
 
 ## Go to Mainnet
 
-1. Update `.env`: set `VITE_CHAIN_ID=1738`, `VITE_RPC_URL=https://svm.injective.network/`, `VITE_USDC_ADDRESS=0xa00C59fF5a080D2b954d0c75e46E22a0c371235a`
+1. Update `.env`: set `VITE_CHAIN_ID=1776`, `VITE_RPC_URL=https://sentry.evm-rpc.injective.network/`, `VITE_USDC_ADDRESS=0xa00C59fF5a080D2b954d0c75e46E22a0c371235a`
 2. Run `npm run deploy:mainnet`
 
 ---
 
 ## Links
 
-- [Injective Docs](https://docs.injective.network/)
-- [Testnet Explorer](https://testnet.blockscout.injective.network/)
+- [Injective EVM Docs](https://docs.injective.network/developers-evm/network-information)
 - [USDC on Injective](https://docs.injective.network/developers-defi/usdc-stablecoin)
+- [Testnet Explorer](https://testnet.blockscout.injective.network/)
 - [Injective MCP Server](https://github.com/InjectiveLabs/mcp-server)
 
 ---

@@ -8,15 +8,21 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title USDCPaymentProcessor
- * @dev Accepts USDC payments on Injective EVM testnet.
+ * @dev Accepts USDC payments on Injective EVM.
  *      Uses the official Circle USDC deployment on Injective.
  *      Tracks payment history per address.
  *      Owner can withdraw accumulated USDC.
  *
- * Injective Testnet USDC: 0x0C382e685bbeeFE5d3d9C29e29E341fEE8E84C5d
- * Get testnet USDC from Circle Faucet: https://faucet.circle.com/
+ * Injective EVM Testnet (Chain ID: 1439)
+ *   USDC: 0x0C382e685bbeeFE5d3d9C29e29E341fEE8E84C5d
+ *   RPC:  https://k8s.testnet.json-rpc.injective.network/
  *
- * Deployed on Injective EVM Testnet (Chain ID: 1440002)
+ * Injective EVM Mainnet (Chain ID: 1776)
+ *   USDC: 0xa00C59fF5a080D2b954d0c75e46E22a0c371235a
+ *   RPC:  https://sentry.evm-rpc.injective.network/
+ *
+ * Get testnet USDC: https://faucet.circle.com/
+ * Docs: https://docs.injective.network/developers-defi/usdc-stablecoin
  */
 contract USDCPaymentProcessor is Ownable, ReentrancyGuard {
     using SafeERC20 for IERC20;
@@ -25,7 +31,7 @@ contract USDCPaymentProcessor is Ownable, ReentrancyGuard {
     address public constant USDC_TESTNET = 0x0C382e685bbeeFE5d3d9C29e29E341fEE8E84C5d;
 
     IERC20 public immutable usdc;
-    uint256 public minimumPayment; // in USDC (6 decimals)
+    uint256 public minimumPayment;
     uint256 public totalCollected;
 
     struct Payment {
@@ -35,53 +41,32 @@ contract USDCPaymentProcessor is Ownable, ReentrancyGuard {
         string memo;
     }
 
-    // Maps user address to their payment records
     mapping(address => Payment[]) private paymentHistory;
-    // All payment records
     Payment[] public allPayments;
 
-    event PaymentReceived(
-        address indexed payer,
-        uint256 amount,
-        string memo,
-        uint256 timestamp
-    );
+    event PaymentReceived(address indexed payer, uint256 amount, string memo, uint256 timestamp);
     event Withdrawal(address indexed to, uint256 amount);
     event MinimumPaymentUpdated(uint256 oldAmount, uint256 newAmount);
 
     error PaymentBelowMinimum(uint256 sent, uint256 minimum);
     error NoFundsToWithdraw();
 
-    /**
-     * @param _minimumPayment Minimum payment in USDC units (e.g. 1000000 = 1 USDC)
-     */
     constructor(uint256 _minimumPayment) Ownable(msg.sender) {
         usdc = IERC20(USDC_TESTNET);
         minimumPayment = _minimumPayment;
     }
 
     /**
-     * @dev User pays USDC to this contract.
-     * @param amount Amount in USDC (6 decimals). E.g., 1000000 = 1 USDC
-     * @param memo Optional payment note/reference
-     *
-     * Before calling this, user must approve this contract:
-     *   usdc.approve(address(paymentProcessor), amount)
+     * @dev Pay USDC. Caller must approve this contract first.
+     * @param amount Amount in USDC units (6 decimals). 1 USDC = 1_000_000
+     * @param memo Optional payment reference
      */
     function pay(uint256 amount, string calldata memo) external nonReentrant {
-        if (amount < minimumPayment) {
-            revert PaymentBelowMinimum(amount, minimumPayment);
-        }
+        if (amount < minimumPayment) revert PaymentBelowMinimum(amount, minimumPayment);
 
         usdc.safeTransferFrom(msg.sender, address(this), amount);
 
-        Payment memory payment = Payment({
-            payer: msg.sender,
-            amount: amount,
-            timestamp: block.timestamp,
-            memo: memo
-        });
-
+        Payment memory payment = Payment(msg.sender, amount, block.timestamp, memo);
         paymentHistory[msg.sender].push(payment);
         allPayments.push(payment);
         totalCollected += amount;
@@ -89,51 +74,31 @@ contract USDCPaymentProcessor is Ownable, ReentrancyGuard {
         emit PaymentReceived(msg.sender, amount, memo, block.timestamp);
     }
 
-    /**
-     * @dev Owner withdraws all collected USDC
-     */
     function withdraw() external onlyOwner nonReentrant {
         uint256 balance = usdc.balanceOf(address(this));
         if (balance == 0) revert NoFundsToWithdraw();
-
         usdc.safeTransfer(owner(), balance);
         emit Withdrawal(owner(), balance);
     }
 
-    /**
-     * @dev Owner withdraws specific amount
-     */
     function withdrawAmount(uint256 amount) external onlyOwner nonReentrant {
         usdc.safeTransfer(owner(), amount);
         emit Withdrawal(owner(), amount);
     }
 
-    /**
-     * @dev Update minimum payment amount
-     */
     function setMinimumPayment(uint256 newMinimum) external onlyOwner {
-        uint256 old = minimumPayment;
+        emit MinimumPaymentUpdated(minimumPayment, newMinimum);
         minimumPayment = newMinimum;
-        emit MinimumPaymentUpdated(old, newMinimum);
     }
 
-    /**
-     * @dev Get payment history for a specific address
-     */
     function getPaymentHistory(address user) external view returns (Payment[] memory) {
         return paymentHistory[user];
     }
 
-    /**
-     * @dev Get total number of payments ever processed
-     */
     function getTotalPaymentCount() external view returns (uint256) {
         return allPayments.length;
     }
 
-    /**
-     * @dev Get current USDC balance held by this contract
-     */
     function getBalance() external view returns (uint256) {
         return usdc.balanceOf(address(this));
     }
