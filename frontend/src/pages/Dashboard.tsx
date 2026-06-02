@@ -9,72 +9,83 @@ export function Dashboard() {
   const { isConnected, address, balance } = useWallet();
 
   return (
-    <div className="min-h-screen bg-injective-dark text-white">
+    <div className="min-h-screen bg-inj-snow">
       {/* Header */}
-      <header className="border-b border-injective-border">
-        <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 font-bold text-white hover:text-injective-blue transition-colors">
-            <span className="text-xl">⚡</span>
+      <header className="bg-inj-midnight border-b border-inj-snow/10">
+        <div className="max-w-5xl mx-auto px-inj-lg h-16 flex items-center justify-between">
+          <Link
+            to="/"
+            className="font-marist font-bold text-inj-snow text-lg tracking-tight
+                       hover:text-inj-snow/80 transition-colors"
+          >
             Injective dApp
           </Link>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-inj-sm">
             <NetworkBadge />
             <ConnectWallet />
           </div>
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 py-8">
+      <main className="max-w-5xl mx-auto px-inj-lg py-inj-xl">
         {!isConnected ? (
-          <div className="text-center py-20">
-            <p className="text-gray-400 mb-4">Connect your wallet to access the dashboard</p>
+          /* Not connected state */
+          <div className="flex flex-col items-center justify-center py-32 gap-inj-lg">
+            <p className="font-marist text-body-md text-inj-midnight/50">
+              Connect your wallet to access the dashboard
+            </p>
             <ConnectWallet />
           </div>
         ) : (
           <>
-            {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-              <div className="bg-injective-card border border-injective-border rounded-xl p-4">
-                <div className="text-xs text-gray-400 mb-1">Wallet</div>
-                <div className="font-mono text-injective-blue text-sm">
-                  {address?.slice(0, 8)}...{address?.slice(-6)}
-                </div>
+            {/* Stats row */}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-inj-sm mb-inj-xl">
+              <div className="card-outline">
+                <p className="font-whyte text-label-sm text-inj-midnight/50 mb-1">Wallet</p>
+                <p className="font-marist text-sm font-semibold text-inj-ocean font-mono">
+                  {address?.slice(0, 8)}…{address?.slice(-6)}
+                </p>
               </div>
-              <div className="bg-injective-card border border-injective-border rounded-xl p-4">
-                <div className="text-xs text-gray-400 mb-1">INJ Balance</div>
-                <div className="text-white font-semibold">
+
+              <div className="card-outline">
+                <p className="font-whyte text-label-sm text-inj-midnight/50 mb-1">INJ Balance</p>
+                <p className="font-marist text-sm font-semibold text-inj-midnight">
                   {balance ? parseFloat(balance.formatted).toFixed(4) : "0"} INJ
-                </div>
+                </p>
               </div>
-              <div className="bg-injective-card border border-injective-border rounded-xl p-4 col-span-2 md:col-span-1">
-                <div className="text-xs text-gray-400 mb-1">Network</div>
-                <div className="text-green-400 font-medium text-sm">Injective Testnet</div>
+
+              <div className="card-outline col-span-2 md:col-span-1">
+                <p className="font-whyte text-label-sm text-inj-midnight/50 mb-1">Network</p>
+                <span className="tag-builder">Injective Testnet</span>
               </div>
             </div>
 
-            {/* Main content */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-6">
+            {/* Main grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-inj-lg">
+              <div>
                 <PaymentForm />
               </div>
-              <div className="space-y-6">
+
+              <div className="space-y-inj-lg">
                 <TransactionHistory />
 
-                {/* MCP hint */}
-                <div className="bg-indigo-900/20 border border-indigo-800/40 rounded-xl p-5">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xl">🤖</span>
-                    <h3 className="font-semibold text-indigo-300">MCP Integration</h3>
+                {/* MCP card */}
+                <div className="card border border-inj-ocean/20">
+                  <div className="flex items-center gap-inj-sm mb-inj-sm">
+                    <span className="tag-builder">AI</span>
+                    <h3 className="font-marist text-base font-bold text-inj-snow">
+                      MCP Integration
+                    </h3>
                   </div>
-                  <p className="text-sm text-indigo-300/70 mb-3">
-                    Use the Injective MCP server to let AI assistants query and transact
-                    on this dApp's contracts.
+                  <p className="font-marist text-body-md text-inj-snow/60 mb-inj-md">
+                    Connect Claude, Cursor, or VS Code to Injective via the MCP
+                    server for natural language on-chain operations.
                   </p>
                   <a
                     href="https://github.com/InjectiveLabs/mcp-server"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-indigo-400 hover:text-indigo-300 underline"
+                    className="font-whyte text-label-sm text-inj-ocean hover:underline"
                   >
                     Set up MCP →
                   </a>

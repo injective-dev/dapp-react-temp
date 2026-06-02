@@ -3,21 +3,24 @@ import { injectiveTestnet } from "@/config/wagmi";
 
 export function NetworkBadge() {
   const { chain, isConnected } = useWallet();
-
   if (!isConnected) return null;
 
   const isCorrect = chain?.id === injectiveTestnet.id;
 
   return (
-    <div
-      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
+    <span
+      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-inj-full font-whyte text-label-sm font-medium ${
         isCorrect
-          ? "bg-green-900/40 text-green-400 border border-green-800/50"
-          : "bg-red-900/40 text-red-400 border border-red-800/50"
+          ? "bg-inj-lime text-inj-forest"
+          : "bg-inj-coral/20 text-inj-coral border border-inj-coral/40"
       }`}
     >
-      <span className={`w-1.5 h-1.5 rounded-full ${isCorrect ? "bg-green-400" : "bg-red-400"}`} />
-      {isCorrect ? chain?.name : `Wrong Network (${chain?.name ?? "Unknown"})`}
-    </div>
+      <span
+        className={`w-1.5 h-1.5 rounded-full ${
+          isCorrect ? "bg-inj-forest" : "bg-inj-coral"
+        }`}
+      />
+      {isCorrect ? chain?.name : `Wrong Network`}
+    </span>
   );
 }

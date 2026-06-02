@@ -2,8 +2,54 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+  Injective Design System — Typography
+  Primary: ABC Marist (obtain from https://abcdinamo.com)
+  Labels:  ABC Whyte  (obtain from https://abcdinamo.com)
+  Fallback: Inter (loaded via Google Fonts in index.html)
+*/
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 @layer base {
   body {
-    @apply bg-injective-dark text-white antialiased;
+    @apply bg-inj-snow font-marist text-inj-midnight antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-marist font-bold;
+  }
+
+  /* Labels, captions, table data → ABC Whyte */
+  .label, label, caption, .font-whyte {
+    @apply font-whyte;
+  }
+}
+
+@layer components {
+  /* Primary Button — Ocean bg, Snow text */
+  .btn-primary {
+    @apply bg-inj-ocean text-inj-snow font-marist text-body-md
+           rounded-inj-md px-inj-md py-inj-sm
+           hover:opacity-90 transition-opacity
+           disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+
+  /* Secondary / Builder Tag — Lime bg, Forest text */
+  .tag-builder {
+    @apply bg-inj-lime text-inj-forest font-whyte text-label-sm
+           rounded-inj-full px-inj-sm py-1
+           inline-flex items-center gap-1;
+  }
+
+  /* Card — Midnight on Snow background */
+  .card {
+    @apply bg-inj-midnight text-inj-snow
+           rounded-inj-md p-inj-lg;
+  }
+
+  /* Card outline variant */
+  .card-outline {
+    @apply bg-transparent border border-inj-midnight/20 text-inj-midnight
+           rounded-inj-md p-inj-lg;
   }
 }

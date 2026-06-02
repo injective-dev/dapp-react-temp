@@ -8,14 +8,8 @@ export function PaymentForm() {
   const [success, setSuccess] = useState<string | null>(null);
 
   const { isConnected, isOnCorrectNetwork } = useWallet();
-  const {
-    usdcBalanceFormatted,
-    minimumPaymentFormatted,
-    pay,
-    isLoading,
-    error,
-    txHash,
-  } = useUSDCPayment();
+  const { usdcBalanceFormatted, minimumPaymentFormatted, pay, isLoading, error, txHash } =
+    useUSDCPayment();
 
   const handlePay = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,56 +20,67 @@ export function PaymentForm() {
       setAmount("");
       setMemo("");
     } catch {
-      // error is set in the hook
+      // error set in hook
     }
   };
 
   if (!isConnected) {
     return (
-      <div className="bg-injective-card border border-injective-border rounded-xl p-6 text-center text-gray-400">
-        Connect your wallet to make payments
+      <div className="card flex items-center justify-center min-h-[120px]">
+        <p className="text-inj-snow/60 font-marist text-body-md">
+          Connect your wallet to make payments
+        </p>
       </div>
     );
   }
 
   if (!isOnCorrectNetwork) {
     return (
-      <div className="bg-injective-card border border-yellow-800/50 rounded-xl p-6 text-center text-yellow-400">
-        Please switch to Injective Testnet to continue
+      <div className="rounded-inj-md p-inj-lg border border-inj-sand/60 bg-inj-sand/10 text-inj-cinnamon text-center font-marist">
+        Switch to Injective Testnet to continue
       </div>
     );
   }
 
   return (
-    <div className="bg-injective-card border border-injective-border rounded-xl p-6 space-y-5">
+    <div className="card space-y-inj-lg">
+      {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-white">Pay with USDC</h2>
-        <div className="text-sm text-gray-400">
-          Balance:{" "}
-          <span className="text-white font-medium">
+        <h2 className="font-marist text-xl font-bold text-inj-snow">
+          Pay with USDC
+        </h2>
+        <div className="text-right">
+          <p className="font-whyte text-label-sm text-inj-snow/50">Your balance</p>
+          <p className="font-marist text-sm font-semibold text-inj-snow">
             {parseFloat(usdcBalanceFormatted).toFixed(2)} USDC
-          </span>
+          </p>
         </div>
       </div>
 
-      {/* Circle Faucet link */}
+      {/* Circle Faucet */}
       <a
         href="https://faucet.circle.com/"
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center justify-center gap-2 w-full bg-blue-900/30 hover:bg-blue-800/40 text-blue-300 border border-blue-800/50 font-medium py-2.5 rounded-lg transition-colors text-sm"
+        className="flex items-center justify-center gap-2 w-full
+                   border border-inj-snow/20 rounded-inj-md py-2.5
+                   font-whyte text-label-sm text-inj-snow/70
+                   hover:border-inj-snow/50 hover:text-inj-snow transition-colors"
       >
-        💧 Get Testnet USDC — Circle Faucet
-        <svg className="w-3.5 h-3.5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+        <span className="text-inj-lime">💧</span>
+        Get Testnet USDC — Circle Faucet
+        <svg className="w-3 h-3 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
         </svg>
       </a>
 
-      <div className="border-t border-injective-border" />
+      <div className="border-t border-inj-snow/10" />
 
-      <form onSubmit={handlePay} className="space-y-4">
+      {/* Form */}
+      <form onSubmit={handlePay} className="space-y-inj-md">
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1.5">
+          <label className="block font-whyte text-label-sm text-inj-snow/60 mb-2">
             Amount (USDC)
           </label>
           <input
@@ -86,14 +91,17 @@ export function PaymentForm() {
             min={minimumPaymentFormatted}
             step="0.01"
             required
-            className="w-full bg-injective-dark border border-injective-border rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-injective-blue transition-colors"
+            className="w-full bg-inj-midnight/60 border border-inj-snow/15
+                       rounded-inj-md px-inj-md py-inj-sm
+                       text-inj-snow font-marist placeholder-inj-snow/30
+                       focus:outline-none focus:border-inj-ocean transition-colors"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1.5">
-            Memo{" "}
-            <span className="text-gray-500 font-normal">(optional)</span>
+          <label className="block font-whyte text-label-sm text-inj-snow/60 mb-2">
+            Memo
+            <span className="ml-1 text-inj-snow/30">(optional)</span>
           </label>
           <input
             type="text"
@@ -101,26 +109,31 @@ export function PaymentForm() {
             onChange={(e) => setMemo(e.target.value)}
             placeholder="Payment reference or note"
             maxLength={200}
-            className="w-full bg-injective-dark border border-injective-border rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-injective-blue transition-colors"
+            className="w-full bg-inj-midnight/60 border border-inj-snow/15
+                       rounded-inj-md px-inj-md py-inj-sm
+                       text-inj-snow font-marist placeholder-inj-snow/30
+                       focus:outline-none focus:border-inj-ocean transition-colors"
           />
         </div>
 
         {error && (
-          <div className="bg-red-900/30 border border-red-800/50 rounded-lg px-4 py-3 text-red-400 text-sm">
+          <div className="rounded-inj-md px-inj-md py-inj-sm bg-inj-coral/10 border border-inj-coral/30
+                          font-whyte text-label-sm text-inj-coral">
             {error}
           </div>
         )}
 
         {success && (
-          <div className="bg-green-900/30 border border-green-800/50 rounded-lg px-4 py-3 text-green-400 text-sm">
-            ✅ Payment sent!{" "}
+          <div className="rounded-inj-md px-inj-md py-inj-sm bg-inj-lime/10 border border-inj-lime/30
+                          font-whyte text-label-sm text-inj-lime">
+            Payment sent!{" "}
             <a
               href={`https://testnet.blockscout.injective.network/tx/${success}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="underline hover:text-green-300"
+              className="underline hover:opacity-80"
             >
-              View on Explorer
+              View on Explorer →
             </a>
           </div>
         )}
@@ -128,14 +141,16 @@ export function PaymentForm() {
         <button
           type="submit"
           disabled={isLoading || !amount}
-          className="w-full bg-injective-blue hover:bg-blue-400 text-black font-semibold py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="btn-primary w-full"
         >
-          {isLoading ? "Processing..." : `Pay ${amount || "0"} USDC`}
+          {isLoading ? "Processing…" : `Pay ${amount || "0"} USDC`}
         </button>
       </form>
 
       {txHash && (
-        <p className="text-xs text-gray-500 break-all">Tx: {txHash}</p>
+        <p className="font-whyte text-label-sm text-inj-snow/30 break-all">
+          Tx: {txHash}
+        </p>
       )}
     </div>
   );

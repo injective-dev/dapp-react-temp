@@ -7,7 +7,7 @@ function formatTimestamp(ts: bigint): string {
 }
 
 function shortenAddress(addr: string): string {
-  return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+  return `${addr.slice(0, 6)}…${addr.slice(-4)}`;
 }
 
 export function TransactionHistory() {
@@ -17,34 +17,41 @@ export function TransactionHistory() {
   if (!isConnected) return null;
 
   return (
-    <div className="bg-injective-card border border-injective-border rounded-xl p-6">
-      <h2 className="text-lg font-semibold text-white mb-4">Payment History</h2>
+    <div className="card space-y-inj-md">
+      <h2 className="font-marist text-xl font-bold text-inj-snow">
+        Payment History
+      </h2>
 
       {paymentHistory.length === 0 ? (
-        <p className="text-gray-400 text-sm text-center py-6">
-          No payments yet. Make your first payment above!
+        <p className="font-marist text-body-md text-inj-snow/40 text-center py-8">
+          No payments yet
         </p>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-2">
           {[...paymentHistory].reverse().map((payment: PaymentRecord, i: number) => (
             <div
               key={i}
-              className="flex items-start justify-between p-3 bg-injective-dark rounded-lg border border-injective-border/50"
+              className="flex items-start justify-between
+                         px-inj-md py-inj-sm
+                         rounded-inj-sm
+                         border border-inj-snow/10 bg-inj-snow/5"
             >
               <div className="space-y-0.5">
-                <div className="text-sm font-medium text-white">
-                  {formatUnits(payment.amount, 6)} USDC
-                </div>
+                <p className="font-marist text-sm font-semibold text-inj-snow">
+                  {parseFloat(formatUnits(payment.amount, 6)).toFixed(2)} USDC
+                </p>
                 {payment.memo && (
-                  <div className="text-xs text-gray-400">"{payment.memo}"</div>
+                  <p className="font-whyte text-label-sm text-inj-snow/50">
+                    "{payment.memo}"
+                  </p>
                 )}
-                <div className="text-xs text-gray-500">
+                <p className="font-whyte text-label-sm text-inj-snow/30">
                   {formatTimestamp(payment.timestamp)}
-                </div>
+                </p>
               </div>
-              <div className="text-xs font-mono text-gray-500">
+              <span className="font-whyte text-label-sm text-inj-snow/40 font-mono">
                 {shortenAddress(payment.payer)}
-              </div>
+              </span>
             </div>
           ))}
         </div>

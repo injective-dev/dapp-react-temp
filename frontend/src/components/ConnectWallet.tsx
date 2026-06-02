@@ -17,7 +17,7 @@ export function ConnectWallet() {
     return (
       <button
         onClick={switchToInjective}
-        className="bg-yellow-500 hover:bg-yellow-400 text-black font-semibold px-4 py-2 rounded-lg transition-colors"
+        className="btn-primary bg-inj-coral text-inj-midnight"
       >
         Switch to Injective Testnet
       </button>
@@ -26,22 +26,29 @@ export function ConnectWallet() {
 
   if (isConnected && address) {
     return (
-      <div className="flex items-center gap-3">
-        <div className="bg-injective-card border border-injective-border rounded-lg px-3 py-2 text-sm">
-          <div className="text-gray-400 text-xs">Balance</div>
-          <div className="text-white font-medium">
+      <div className="flex items-center gap-inj-sm">
+        {/* Balance chip */}
+        <div className="flex flex-col px-inj-md py-inj-sm bg-inj-snow border border-inj-midnight/15 rounded-inj-md">
+          <span className="font-whyte text-label-sm text-inj-midnight/50">Balance</span>
+          <span className="font-marist text-sm font-semibold text-inj-midnight">
             {balance ? parseFloat(balance.formatted).toFixed(4) : "0"} INJ
-          </div>
+          </span>
         </div>
-        <div className="bg-injective-card border border-injective-border rounded-lg px-3 py-2 text-sm">
-          <div className="text-gray-400 text-xs">Address</div>
-          <div className="text-injective-blue font-mono font-medium">
-            {address.slice(0, 6)}...{address.slice(-4)}
-          </div>
+
+        {/* Address chip */}
+        <div className="flex flex-col px-inj-md py-inj-sm bg-inj-snow border border-inj-midnight/15 rounded-inj-md">
+          <span className="font-whyte text-label-sm text-inj-midnight/50">Address</span>
+          <span className="font-marist text-sm font-semibold text-inj-ocean font-mono">
+            {address.slice(0, 6)}…{address.slice(-4)}
+          </span>
         </div>
+
+        {/* Disconnect */}
         <button
           onClick={() => disconnect()}
-          className="bg-red-900/30 hover:bg-red-800/50 text-red-400 border border-red-800/50 font-medium px-4 py-2 rounded-lg transition-colors text-sm"
+          className="px-inj-md py-inj-sm rounded-inj-md font-marist text-sm font-medium
+                     border border-inj-midnight/20 text-inj-midnight/60
+                     hover:border-inj-midnight/50 hover:text-inj-midnight transition-colors"
         >
           Disconnect
         </button>
@@ -50,17 +57,14 @@ export function ConnectWallet() {
   }
 
   return (
-    <div className="flex gap-2">
-      {connectors.slice(0, 2).map((connector, i) => (
-        <button
-          key={connector.id}
-          onClick={() => connectWallet(i)}
-          disabled={isConnecting}
-          className="bg-injective-blue hover:bg-blue-400 text-black font-semibold px-4 py-2 rounded-lg transition-colors disabled:opacity-50"
-        >
-          {isConnecting ? "Connecting..." : i === 0 ? "Connect Wallet" : connector.name}
-        </button>
-      ))}
+    <div className="flex gap-inj-sm">
+      <button
+        onClick={() => connectWallet(0)}
+        disabled={isConnecting}
+        className="btn-primary"
+      >
+        {isConnecting ? "Connecting…" : "Connect Wallet"}
+      </button>
     </div>
   );
 }
