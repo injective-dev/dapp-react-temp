@@ -1,13 +1,8 @@
 # ⚡ Injective dApp React Template
 
-A production-ready React starter template for building dApps on [Injective](https://injective.network/). Clone this repo and start building in minutes.
+React starter for building dApps on Injective EVM. Clone and start building.
 
-**What's included:**
-- 🎨 **React 18 + Vite + TypeScript + Tailwind CSS** frontend
-- 💳 **USDC Payment contracts** (MockUSDC + USDCPaymentProcessor) on Injective EVM testnet
-- 🤖 **Injective MCP integration** — let AI assistants query and transact on Injective
-- 🔗 **wagmi v2 + viem** for wallet connection (MetaMask, WalletConnect)
-- 🧪 **Hardhat** for contract compilation, testing, and deployment
+**Stack:** Vite + React 18 + TypeScript + Tailwind CSS + wagmi v2 + Hardhat
 
 ---
 
@@ -15,307 +10,112 @@ A production-ready React starter template for building dApps on [Injective](http
 
 ```bash
 # 1. Clone
-git clone https://github.com/injective-dev/dapp-react-temp my-dapp
-cd my-dapp
+git clone https://github.com/injective-dev/dapp-react-temp my-dapp && cd my-dapp
 
-# 2. Set up environment
-cp .env.example .env
-# Edit .env with your values
+# 2. Deploy contracts to Injective testnet
+cd contracts && npm install && npm run deploy:testnet
+# → Copy the printed addresses into .env
 
-# 3. Deploy contracts to Injective testnet
-cd contracts
-npm install
-npm run deploy:testnet
-# → Copy the printed contract addresses into your .env
+# 3. Configure environment
+cp .env.example .env  # fill in VITE_PAYMENT_PROCESSOR_ADDRESS
 
-# 4. Start the frontend
-cd ../frontend
-npm install
-npm run dev
-# → Open http://localhost:5173
+# 4. Run frontend
+cd ../frontend && npm install && npm run dev
 ```
 
-**Need testnet INJ?** Get it from the [Injective Testnet Faucet](https://testnet.faucet.injective.network/).
+> **Need testnet tokens?**
+> - INJ (gas): [testnet.faucet.injective.network](https://testnet.faucet.injective.network/)
+> - USDC: [faucet.circle.com](https://faucet.circle.com/)
 
 ---
 
 ## Project Structure
 
 ```
-dapp-react-temp/
-├── frontend/                    # React app (Vite + TypeScript + Tailwind)
+├── frontend/          # React app
 │   └── src/
-│       ├── config/
-│       │   ├── wagmi.ts         # Injective chain config + wallet connectors
-│       │   └── contracts.ts     # Contract addresses + ABIs
-│       ├── hooks/
-│       │   ├── useWallet.ts     # Wallet connection state
-│       │   └── useUSDCPayment.ts # USDC payment interactions
+│       ├── config/    # Chain config (wagmi) + contract ABIs
+│       ├── hooks/     # useWallet, useUSDCPayment
 │       ├── components/
-│       │   ├── ConnectWallet.tsx
-│       │   ├── PaymentForm.tsx
-│       │   ├── TransactionHistory.tsx
-│       │   └── NetworkBadge.tsx
-│       └── pages/
-│           ├── Home.tsx         # Landing page
-│           └── Dashboard.tsx    # Main dApp UI
-├── contracts/                   # Solidity + Hardhat
-│   ├── contracts/
-│   │   ├── MockUSDC.sol         # ERC20 mock USDC (testnet)
-│   │   └── USDCPaymentProcessor.sol
-│   ├── scripts/deploy.ts        # Deployment script
-│   └── test/                   # Contract tests
-├── mcp/                         # Injective MCP integration
-│   ├── README.md                # MCP setup guide
-│   ├── setup.sh                 # Auto-setup script
-│   ├── mcp-config.json          # Config template for AI clients
-│   └── examples/                # Usage examples
-├── .env.example                 # Environment variables template
-└── package.json                 # Root workspace
+│       └── pages/     # Home, Dashboard
+├── contracts/         # Solidity + Hardhat
+│   ├── contracts/USDCPaymentProcessor.sol
+│   └── scripts/deploy.ts
+└── mcp/               # Injective MCP integration
 ```
 
 ---
 
-## Smart Contracts
+## Contracts
 
-Deployed on **Injective EVM Testnet** (Chain ID: `1440002`).
+**Network:** Injective EVM Testnet · Chain ID `1440002`
 
-### USDC (Circle Native)
-
-The official Circle USDC deployment on Injective testnet (`0x0C382e685bbeeFE5d3d9C29e29E341fEE8E84C5d`). Get testnet USDC from the [Circle Faucet](https://faucet.circle.com/).
-
-```solidity
-// Get 1000 test USDC
-// USDC is the real Circle testnet deployment
-// Get testnet USDC: https://faucet.circle.com/
-```
+**USDC:** `0x0C382e685bbeeFE5d3d9C29e29E341fEE8E84C5d` (official Circle deployment)
 
 ### USDCPaymentProcessor
 
-Accepts USDC payments, tracks history, and lets the owner withdraw.
+Accepts USDC, tracks payment history, owner can withdraw.
 
 ```solidity
-// Pay 10 USDC with a memo
-paymentProcessor.pay(10_000_000, "subscription payment");
-
-// View payment history
-Payment[] memory history = paymentProcessor.getPaymentHistory(userAddress);
+pay(uint256 amount, string memo)       // user pays USDC
+getPaymentHistory(address user)        // view history
+withdraw()                             // owner withdraws (onlyOwner)
+setMinimumPayment(uint256 amount)      // update minimum (onlyOwner)
 ```
-
-**Key functions:**
-
-| Function | Access | Description |
-|----------|--------|-------------|
-| `pay(amount, memo)` | Public | Send USDC payment |
-| `getPaymentHistory(user)` | Public | Get payment records |
-| `withdraw()` | Owner | Withdraw all USDC |
-| `setMinimumPayment(amount)` | Owner | Update minimum payment |
-
-### Deploying Contracts
 
 ```bash
 cd contracts
-
-# Install dependencies
-npm install
-
-# Compile
-npm run compile
-
-# Run tests
-npm run test
-
-# Deploy to testnet
+npm run compile       # compile
+npm run test          # run tests
 npm run deploy:testnet
-
-# Deploy to mainnet (when ready)
-npm run deploy:mainnet
-```
-
-After deployment, copy the printed addresses into your `.env` file.
-
----
-
-## Frontend
-
-### Injective Chain Config (`frontend/src/config/wagmi.ts`)
-
-The template pre-configures the Injective EVM testnet chain:
-
-```typescript
-const injectiveTestnet = defineChain({
-  id: 1440002,           // Chain ID
-  name: "Injective Testnet",
-  nativeCurrency: { name: "Injective", symbol: "INJ", decimals: 18 },
-  rpcUrls: {
-    default: { http: ["https://testnet.svm.injective.network/"] },
-  },
-  blockExplorers: {
-    default: { url: "https://testnet.explorer.injective.network/" },
-  },
-  testnet: true,
-});
-```
-
-To switch to mainnet, uncomment the `injectiveMainnet` chain definition and update your `.env`.
-
-### Key Hooks
-
-**`useWallet`** — wallet connection state:
-```typescript
-const { address, isConnected, balance, connectWallet, disconnect } = useWallet();
-```
-
-**`useUSDCPayment`** — USDC payment operations:
-```typescript
-const { usdcBalanceFormatted, pay, mintTestUSDC, paymentHistory } = useUSDCPayment();
-
-// Pay 10 USDC
-await pay("10", "subscription");
-
-// Mint test USDC from faucet
-await mintTestUSDC();
 ```
 
 ---
 
-## 🤖 Injective MCP Integration
+## MCP Integration
 
-This template includes an integration module for the [Injective MCP Server](https://github.com/InjectiveLabs/mcp-server), which lets AI assistants (Claude, Cursor, VS Code Copilot) query and transact on Injective via natural language.
-
-### What is MCP?
-
-[MCP (Model Context Protocol)](https://modelcontextprotocol.io/introduction) is an open standard that enables AI tools to connect to external data sources and APIs. The Injective MCP server exposes Injective's blockchain capabilities as MCP tools.
-
-### Setup
+Connect AI assistants (Claude, Cursor, VS Code) to Injective via the [Injective MCP Server](https://github.com/InjectiveLabs/mcp-server).
 
 ```bash
-# Automated setup (clones and builds the MCP server)
-npm run mcp:setup
-
-# Or manually:
-cd mcp && bash setup.sh
+npm run mcp:setup   # clones + builds the MCP server
 ```
 
-### Configure Your AI Client
-
-#### Claude Desktop
-
-Edit `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
+Then add to your AI client config:
 
 ```json
 {
   "mcpServers": {
     "injective": {
       "command": "node",
-      "args": ["/absolute/path/to/mcp/injective-mcp-server/dist/mcp/server.js"],
-      "env": {
-        "INJECTIVE_NETWORK": "testnet"
-      }
+      "args": ["/path/to/mcp/injective-mcp-server/dist/mcp/server.js"],
+      "env": { "INJECTIVE_NETWORK": "testnet" }
     }
   }
 }
 ```
 
-Restart Claude Desktop. ✅
+- **Claude Desktop:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Cursor:** `.cursor/mcp.json`
+- **VS Code:** `.vscode/mcp.json`
 
-#### Cursor IDE
-
-Create `.cursor/mcp.json` in your project root:
-
-```json
-{
-  "mcpServers": {
-    "injective": {
-      "command": "node",
-      "args": ["/absolute/path/to/mcp/injective-mcp-server/dist/mcp/server.js"],
-      "env": {
-        "INJECTIVE_NETWORK": "testnet"
-      }
-    }
-  }
-}
-```
-
-#### VS Code (GitHub Copilot)
-
-Create `.vscode/mcp.json`:
-
-```json
-{
-  "servers": {
-    "injective": {
-      "type": "stdio",
-      "command": "node",
-      "args": ["/absolute/path/to/mcp/injective-mcp-server/dist/mcp/server.js"],
-      "env": {
-        "INJECTIVE_NETWORK": "testnet"
-      }
-    }
-  }
-}
-```
-
-### Example AI Prompts
-
-Once connected, ask your AI assistant:
-
-```
-"What's the INJ balance of 0x1234...abcd on Injective testnet?"
-"Check the USDC balance of my wallet"
-"Did transaction 0xabc... succeed?"
-"What's the current gas price on Injective?"
-"Query the MockUSDC total supply"
-```
-
-### Switch to Mainnet
-
-Change the env value in your config:
-```json
-"env": { "INJECTIVE_NETWORK": "mainnet" }
-```
-
-Full MCP docs: [`mcp/README.md`](./mcp/README.md)
+See [`mcp/README.md`](./mcp/README.md) for full setup guide.
 
 ---
 
-## Deployment to Mainnet
+## Go to Mainnet
 
-1. **Switch contract network** in `contracts/.env`:
-   ```
-   # Use mainnet RPC
-   INJECTIVE_TESTNET_RPC=https://svm.injective.network/
-   ```
-   Then run `npm run deploy:mainnet`
-
-2. **Switch frontend** — update `.env`:
-   ```
-   VITE_CHAIN_ID=1738
-   VITE_RPC_URL=https://svm.injective.network/
-   VITE_EXPLORER_URL=https://explorer.injective.network/
-   ```
-
-3. **Replace MockUSDC** with the real USDC address on Injective mainnet.
-
-4. **Build**: `npm run build` → deploy `frontend/dist/` to your hosting (Vercel, Netlify, etc.)
+1. Update `.env`: set `VITE_CHAIN_ID=1738`, `VITE_RPC_URL=https://svm.injective.network/`, `VITE_USDC_ADDRESS=0xa00C59fF5a080D2b954d0c75e46E22a0c371235a`
+2. Run `npm run deploy:mainnet`
 
 ---
 
-## Resources
+## Links
 
-| Resource | Link |
-|----------|------|
-| Injective Developer Docs | https://docs.injective.network/ |
-| Injective EVM Docs | https://docs.injective.network/developers/evm |
-| Injective MCP Server | https://github.com/InjectiveLabs/mcp-server |
-| Circle USDC Faucet | https://faucet.circle.com/ |
-| Injective INJ Faucet | https://testnet.faucet.injective.network/ |
-| Testnet Explorer | https://testnet.explorer.injective.network/ |
-| Mainnet Explorer | https://explorer.injective.network/ |
-| Injective Discord | https://discord.gg/injective |
+- [Injective Docs](https://docs.injective.network/)
+- [Testnet Explorer](https://testnet.blockscout.injective.network/)
+- [USDC on Injective](https://docs.injective.network/developers-defi/usdc-stablecoin)
+- [Injective MCP Server](https://github.com/InjectiveLabs/mcp-server)
 
 ---
-
-## License
 
 MIT © [Chuhan Jin](https://github.com/ChuhanJin)
