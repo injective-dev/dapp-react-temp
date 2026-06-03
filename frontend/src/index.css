@@ -20,7 +20,7 @@
   }
 
   /* Labels, captions, table data → ABC Whyte */
-  .label, label, caption, .font-whyte {
+  .label, label, caption {
     @apply font-whyte;
   }
 }
