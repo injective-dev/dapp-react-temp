@@ -20,6 +20,7 @@ const config: HardhatUserConfig = {
       url: process.env.INJECTIVE_TESTNET_RPC || "https://k8s.testnet.json-rpc.injective.network/",
       chainId: 1439,
       accounts: [PRIVATE_KEY],
+      gasPrice: 500000000000, // 500 Gwei — Injective minimum ~160 Gwei
     },
     // Injective EVM Mainnet — Chain ID: 1776
     // RPC: https://sentry.evm-rpc.injective.network/
@@ -27,6 +28,7 @@ const config: HardhatUserConfig = {
       url: "https://sentry.evm-rpc.injective.network/",
       chainId: 1776,
       accounts: [PRIVATE_KEY],
+      gasPrice: 500000000000, // 500 Gwei
     },
   },
   etherscan: {
