@@ -33,15 +33,15 @@ git clone https://github.com/<your-github-username>/<your-new-repo-name> my-dapp
 cd my-dapp
 
 # Deploy the example contract to Injective testnet
-cd contracts && npm install && npm run deploy:testnet
-# → Copy the printed contract address, you'll need it next
+cd contracts
+cp .env.example .env        # fill in your PRIVATE_KEY
+npm install && npm run deploy:testnet
+# → Copy the printed VITE_PAYMENT_PROCESSOR_ADDRESS for the next step
 
-# Configure environment variables
-cp .env.example .env
-# Open .env and set VITE_PAYMENT_PROCESSOR_ADDRESS=<address from above>
-
-# Start the frontend
-cd ../frontend && npm install && npm run dev
+# Configure the frontend environment (⚠️ must be inside frontend/)
+cd ../frontend
+cp .env.example .env        # fill in VITE_PAYMENT_PROCESSOR_ADDRESS
+npm install && npm run dev
 ```
 
 > Need testnet tokens? Get **INJ** (gas) at [testnet.faucet.injective.network](https://testnet.faucet.injective.network/) and **USDC** at [faucet.circle.com](https://faucet.circle.com/).
