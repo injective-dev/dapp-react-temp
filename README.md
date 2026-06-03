@@ -1,25 +1,38 @@
 # ⚡ Injective dApp React Template
 
-React starter for building dApps on Injective EVM. Clone and start building.
+> **GitHub Template Repo** — Click **"Use this template"** (top right) to create your own repo from this starter. Do not clone directly.
+
+React starter for building dApps on Injective EVM.
 
 **Stack:** Vite + React 18 + TypeScript + Tailwind CSS + wagmi v2 + Hardhat
 
 ---
 
-## Quick Start
+## Getting Started
+
+1. Click **"Use this template"** → **"Create a new repository"**
+2. Clone your new repo locally
 
 ```bash
-# 1. Clone
-git clone https://github.com/injective-dev/dapp-react-temp my-dapp && cd my-dapp
+git clone https://github.com/<your-username>/<your-repo> my-dapp && cd my-dapp
+```
 
-# 2. Deploy contracts to Injective testnet
+3. Deploy contracts to Injective testnet
+
+```bash
 cd contracts && npm install && npm run deploy:testnet
-# → Copy the printed addresses into .env
+# → Copy printed contract addresses into .env
+```
 
-# 3. Configure environment
+4. Configure environment
+
+```bash
 cp .env.example .env  # fill in VITE_PAYMENT_PROCESSOR_ADDRESS
+```
 
-# 4. Run frontend
+5. Run the frontend
+
+```bash
 cd ../frontend && npm install && npm run dev
 ```
 
