@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useReadContract, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import { parseUnits, formatUnits, maxUint256 } from "viem";
-import { CONTRACT_ADDRESSES, ERC20_ABI, PAYMENT_PROCESSOR_ABI } from "@/config/contracts";
+import { CONTRACT_ADDRESSES, ERC20_ABI, PAYMENT_PROCESSOR_ABI, IS_CONTRACT_CONFIGURED } from "@/config/contracts";
 import { useAccount } from "wagmi";
 
 export interface PaymentRecord {
@@ -86,6 +86,11 @@ export function useUSDCPayment() {
    * Get testnet USDC from: https://faucet.circle.com/
    */
   const pay = async (amountStr: string, memo: string) => {
+    if (!IS_CONTRACT_CONFIGURED) {
+      const msg = "Contract not configured. Deploy the contract first, then set VITE_PAYMENT_PROCESSOR_ADDRESS in your .env file.";
+      setError(msg);
+      throw new Error(msg);
+    }
     setIsLoading(true);
     setError(null);
     try {

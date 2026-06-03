@@ -4,6 +4,7 @@ import { NetworkBadge } from "@/components/NetworkBadge";
 import { PaymentForm } from "@/components/PaymentForm";
 import { TransactionHistory } from "@/components/TransactionHistory";
 import { useWallet } from "@/hooks/useWallet";
+import { IS_CONTRACT_CONFIGURED } from "@/config/contracts";
 
 export function Dashboard() {
   const { isConnected, address, balance } = useWallet();
@@ -28,6 +29,23 @@ export function Dashboard() {
       </header>
 
       <main className="max-w-5xl mx-auto px-inj-lg py-inj-xl">
+        {/* Setup banner — shown when contract is not yet deployed */}
+        {!IS_CONTRACT_CONFIGURED && (
+          <div className="mb-inj-lg rounded-inj-md border border-amber-400/40 bg-amber-50 px-inj-lg py-inj-md">
+            <p className="font-marist text-sm font-semibold text-amber-800 mb-1">
+              ⚠️ Contract not configured
+            </p>
+            <p className="font-whyte text-label-sm text-amber-700">
+              Deploy the contract first, then set{" "}
+              <code className="font-mono bg-amber-100 px-1 rounded">VITE_PAYMENT_PROCESSOR_ADDRESS</code>{" "}
+              in your <code className="font-mono bg-amber-100 px-1 rounded">.env</code> file and restart the dev server.
+            </p>
+            <pre className="mt-inj-sm font-mono text-xs text-amber-800 bg-amber-100 rounded p-inj-sm overflow-x-auto">
+              cd contracts && npm run deploy:testnet{"\n"}
+              # Copy the printed address into frontend/.env
+            </pre>
+          </div>
+        )}
         {!isConnected ? (
           /* Not connected state */
           <div className="flex flex-col items-center justify-center py-32 gap-inj-lg">

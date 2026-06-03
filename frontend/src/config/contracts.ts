@@ -15,6 +15,14 @@ export const CONTRACT_ADDRESSES = {
 };
 
 /**
+ * True only when VITE_PAYMENT_PROCESSOR_ADDRESS is set to a real deployed address.
+ * Use this to guard UI flows before allowing transactions.
+ */
+export const IS_CONTRACT_CONFIGURED =
+  !!import.meta.env.VITE_PAYMENT_PROCESSOR_ADDRESS &&
+  import.meta.env.VITE_PAYMENT_PROCESSOR_ADDRESS !== "0x0000000000000000000000000000000000000000";
+
+/**
  * Standard ERC20 ABI — functions needed for USDC interactions
  */
 export const ERC20_ABI = [
