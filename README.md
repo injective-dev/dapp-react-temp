@@ -18,28 +18,33 @@
 
 ---
 
-> **GitHub Template** — Click **"Use this template"** → **"Create a new repository"** to get started. Do not clone this repo directly.
-
----
-
 ## Quick Start
 
+**Step 1 — Create your repo from this template**
+
+Click **"Use this template"** (top right of this page) → **"Create a new repository"**.
+GitHub will create a fresh repo under your account with all the files.
+
+**Step 2 — Clone and set up**
+
 ```bash
-# 1. Clone your new repo
-git clone https://github.com/<your-username>/<your-repo> my-dapp && cd my-dapp
+# Clone the repo GitHub just created for you
+git clone https://github.com/<your-github-username>/<your-new-repo-name> my-dapp
+cd my-dapp
 
-# 2. Deploy contracts to testnet
+# Deploy the example contract to Injective testnet
 cd contracts && npm install && npm run deploy:testnet
-# Copy the printed contract address into .env
+# → Copy the printed contract address, you'll need it next
 
-# 3. Configure environment
-cp .env.example .env  # set VITE_PAYMENT_PROCESSOR_ADDRESS
+# Configure environment variables
+cp .env.example .env
+# Open .env and set VITE_PAYMENT_PROCESSOR_ADDRESS=<address from above>
 
-# 4. Start frontend
+# Start the frontend
 cd ../frontend && npm install && npm run dev
 ```
 
-> Need testnet tokens? Get **INJ** at [testnet.faucet.injective.network](https://testnet.faucet.injective.network/) and **USDC** at [faucet.circle.com](https://faucet.circle.com/).
+> Need testnet tokens? Get **INJ** (gas) at [testnet.faucet.injective.network](https://testnet.faucet.injective.network/) and **USDC** at [faucet.circle.com](https://faucet.circle.com/).
 
 ---
 
