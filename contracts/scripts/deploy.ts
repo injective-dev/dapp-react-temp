@@ -27,7 +27,7 @@ async function main() {
   console.log("USDCPaymentProcessor:     ", processorAddress);
   console.log("=".repeat(50));
   console.log("\n📋 Add these to your .env:");
-  console.log(`VITE_MOCK_USDC_ADDRESS=${USDC_TESTNET}`);
+  console.log(`VITE_USDC_ADDRESS=${USDC_TESTNET}`);
   console.log(`VITE_PAYMENT_PROCESSOR_ADDRESS=${processorAddress}`);
   console.log("\n🔗 View on Injective Testnet Explorer:");
   console.log(`https://testnet.blockscout.injective.network/address/${processorAddress}`);
