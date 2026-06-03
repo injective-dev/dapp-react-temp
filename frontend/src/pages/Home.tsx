@@ -106,13 +106,14 @@ export function Home() {
         </h2>
         <div className="bg-inj-midnight rounded-inj-md p-inj-xl overflow-x-auto">
           <pre className="font-mono text-sm text-inj-snow/80 space-y-1">
-            <div><span className="text-inj-snow/40"># 1. Clone</span></div>
-            <div className="text-inj-snow">git clone https://github.com/injective-dev/dapp-react-temp</div>
+            <div><span className="text-inj-snow/40"># 1. Click "Use this template" on GitHub, then clone your new repo</span></div>
+            <div className="text-inj-snow">git clone https://github.com/&lt;you&gt;/&lt;your-repo&gt; &amp;&amp; <span className="text-inj-ocean">cd</span> &lt;your-repo&gt;</div>
             <div className="mt-3"><span className="text-inj-snow/40"># 2. Deploy contracts</span></div>
-            <div><span className="text-inj-ocean">cd</span> contracts &amp;&amp; npm install &amp;&amp; npm run deploy:testnet</div>
-            <div className="mt-3"><span className="text-inj-snow/40"># 3. Configure &amp; run</span></div>
-            <div>cp .env.example .env <span className="text-inj-snow/40"># fill VITE_PAYMENT_PROCESSOR_ADDRESS</span></div>
-            <div><span className="text-inj-ocean">cd</span> frontend &amp;&amp; npm install &amp;&amp; npm run dev</div>
+            <div><span className="text-inj-ocean">cd</span> contracts &amp;&amp; cp .env.example .env <span className="text-inj-snow/40"># add PRIVATE_KEY</span></div>
+            <div>npm install &amp;&amp; npm run deploy:testnet</div>
+            <div className="mt-3"><span className="text-inj-snow/40"># 3. Configure frontend &amp; run</span></div>
+            <div><span className="text-inj-ocean">cd</span> ../frontend &amp;&amp; cp .env.example .env <span className="text-inj-snow/40"># add VITE_PAYMENT_PROCESSOR_ADDRESS</span></div>
+            <div>npm install &amp;&amp; npm run dev</div>
           </pre>
         </div>
       </section>
