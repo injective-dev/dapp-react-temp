@@ -21,16 +21,7 @@ const config: HardhatUserConfig = {
       chainId: 1439,
       accounts: [PRIVATE_KEY],
       gasPrice: 160000000, // 0.16 Gwei — Injective EVM minimum
-      gas: 2000000,        // gas limit
-    },
-    // Injective EVM Mainnet — Chain ID: 1776
-    // RPC: https://sentry.evm-rpc.injective.network/
-    injectiveMainnet: {
-      url: "https://sentry.evm-rpc.injective.network/",
-      chainId: 1776,
-      accounts: [PRIVATE_KEY],
-      gasPrice: 160000000, // 0.16 Gwei — Injective EVM minimum
-      gas: 2000000,        // gas limit
+      gas: 2000000,
     },
   },
   etherscan: {

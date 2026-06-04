@@ -3,10 +3,10 @@
 
   <h1>Injective dApp React Template</h1>
 
-  <p>A minimal React starter for building dApps on Injective EVM.</p>
+  <p>A minimal React starter for building dApps on Injective EVM Testnet.</p>
 
   <p>
-    <strong>Stack:</strong> Vite · React 18 · TypeScript · Tailwind CSS · wagmi v2 · Hardhat
+    <strong>Stack:</strong> Vite · React 18 · TypeScript · Tailwind CSS · wagmi v2
   </p>
 
   <p>
@@ -18,119 +18,221 @@
 
 ---
 
-## Quick Start
+## 🚀 Quick Start
 
-**Step 1 — Create your repo from this template**
-
-Click **"Use this template"** (top right of this page) → **"Create a new repository"**.
-GitHub will create a fresh repo under your account with all the files.
-
-**Step 2 — Clone and set up**
+**Clone and run:**
 
 ```bash
-# Clone the repo GitHub just created for you
-git clone https://github.com/<your-github-username>/<your-new-repo-name> my-dapp
-cd my-dapp
+# Clone this template
+git clone https://github.com/injective-dev/dapp-react-temp.git my-dapp
+cd my-dapp/frontend
 
-# Deploy the example contract to Injective testnet
-cd contracts
-cp .env.example .env        # fill in your PRIVATE_KEY
-npm install && npm run deploy:testnet
-# → Copy the printed VITE_PAYMENT_PROCESSOR_ADDRESS for the next step
+# Install dependencies
+npm install
 
-# Configure the frontend environment (⚠️ must be inside frontend/)
-cd ../frontend
-cp .env.example .env        # fill in VITE_PAYMENT_PROCESSOR_ADDRESS
-npm install && npm run dev
+# Set up environment (vault address is already deployed!)
+cp .env.example .env
+
+# Start the dev server
+npm run dev
 ```
 
-> Need testnet tokens? Get **INJ** (gas) at [testnet.faucet.injective.network](https://testnet.faucet.injective.network/) and **USDC** at [faucet.circle.com](https://faucet.circle.com/).
+Open [http://localhost:5173](http://localhost:5173) — you're ready to go!
 
 ---
 
-## Project Structure
+## 📦 What's Included
+
+### USDC Vault Contract (Already Deployed!)
+
+A simple custodial vault on **Injective EVM Testnet**:
+
+- ✅ **Deposit USDC** — users deposit Circle USDC into the vault
+- ✅ **Withdraw USDC** — users can withdraw their own funds at any time
+- ✅ **View balance** — see total USDC held by the vault
+
+**Deployed Contract:**
+- **Address:** `0xc79efba3814eedb4b8b85651bc6668198e46ac5a`
+- **Network:** Injective EVM Testnet (Chain ID: 1439)
+- **Explorer:** [View on Blockscout](https://testnet.blockscout.injective.network/address/0xc79efba3814eedb4b8b85651bc6668198e46ac5a)
+
+### Frontend Features
+
+- **Wallet connection** — MetaMask, WalletConnect, Coinbase Wallet via wagmi
+- **Network detection** — auto-detects Injective Testnet
+- **Deposit/Withdraw UI** — simple forms for vault interactions
+- **Real-time balance** — shows wallet balance, deposited balance, and total vault balance
+- **Transaction history** — track your deposits and withdrawals
+
+---
+
+## 🛠 Project Structure
 
 ```
 ├── frontend/               # React app
-│   └── src/
-│       ├── config/         # wagmi chain config + ABIs
-│       ├── hooks/          # useWallet, useUSDCPayment
-│       ├── components/
-│       └── pages/          # Home, Dashboard
-├── contracts/              # Solidity + Hardhat
-│   ├── contracts/USDCPaymentProcessor.sol
-│   └── scripts/deploy.ts
-└── mcp/                    # Injective MCP integration
+│   ├── src/
+│   │   ├── components/     # VaultForm, ConnectWallet, etc.
+│   │   ├── config/         # wagmi + contract ABIs
+│   │   ├── hooks/          # useWallet, useUSDCVault
+│   │   └── pages/          # Home, Dashboard
+│   └── .env.example        # Environment template
+│
+├── contracts/              # Solidity contracts (reference only)
+│   └── contracts/USDCVault.sol
+│
+└── README.md
 ```
 
 ---
 
-## Network Reference
+## 🔧 Configuration
 
-| | Testnet | Mainnet |
-|---|---|---|
-| Chain ID | `1439` | `1776` |
-| RPC | `https://k8s.testnet.json-rpc.injective.network/` | `https://sentry.evm-rpc.injective.network/` |
-| Explorer | [testnet.blockscout](https://testnet.blockscout.injective.network/) | [blockscout](https://blockscout.injective.network/) |
-| USDC | `0x0C382e...84C5d` | `0xa00C59...235a` |
+### Environment Variables
+
+Create `frontend/.env`:
+
+```bash
+# USDC Vault address (already deployed on testnet)
+VITE_VAULT_ADDRESS=0xc79efba3814eedb4b8b85651bc6668198e46ac5a
+
+# Optional: override default USDC address
+# VITE_USDC_ADDRESS=0x0C382e685bbeeFE5d3d9C29e29E341fEE8E84C5d
+```
+
+The vault contract is **already deployed** — you don't need to deploy anything yourself!
 
 ---
 
-## Contracts
+## 💳 Get Testnet Tokens
 
-**USDCPaymentProcessor** — accepts USDC, tracks history, owner can withdraw.
+### 1. Get INJ (for gas)
+
+Visit the [Injective Testnet Faucet](https://testnet.faucet.injective.network/):
+
+1. Connect your wallet
+2. Request testnet INJ
+3. Wait ~30 seconds
+
+### 2. Get USDC (Circle testnet USDC)
+
+Visit [faucet.circle.com](https://faucet.circle.com/):
+
+1. Select **Injective Testnet**
+2. Enter your wallet address
+3. Receive 10 testnet USDC
+
+---
+
+## 📖 How It Works
+
+### Deposit Flow
+
+1. User approves the vault to spend USDC (one-time)
+2. User enters deposit amount
+3. Contract transfers USDC from user to vault
+4. Balance updates instantly
+
+### Withdraw Flow
+
+1. User enters withdrawal amount (up to their deposited balance)
+2. Contract transfers USDC back to user
+3. Balance updates instantly
+
+**No admin fees, no lock-up period** — users have full control over their funds.
+
+---
+
+## 🌐 Network Details
+
+| | Testnet |
+|---|---|
+| **Chain ID** | `1439` |
+| **RPC** | `https://k8s.testnet.json-rpc.injective.network/` |
+| **Explorer** | [testnet.blockscout.injective.network](https://testnet.blockscout.injective.network/) |
+| **USDC Contract** | `0x0C382e685bbeeFE5d3d9C29e29E341fEE8E84C5d` |
+| **Vault Contract** | `0xc79efba3814eedb4b8b85651bc6668198e46ac5a` |
+
+---
+
+## 🧪 Smart Contract (Reference)
+
+The vault contract source is in `contracts/contracts/USDCVault.sol`.
+
+**Key functions:**
 
 ```solidity
-pay(uint256 amount, string memo)      // pay with USDC (approve first)
-getPaymentHistory(address user)       // view payment history
-withdraw()                            // owner withdraws
-setMinimumPayment(uint256 amount)     // update minimum (owner only)
+function deposit(uint256 amount) external;
+function withdraw(uint256 amount) external;
+function withdrawAll() external;
+function getVaultBalance() external view returns (uint256);
+function getUserDeposit(address user) external view returns (uint256);
 ```
+
+**Security features:**
+
+- ✅ ReentrancyGuard on all state-changing functions
+- ✅ SafeERC20 for token transfers
+- ✅ No admin/owner — fully permissionless
+- ✅ Users can only withdraw their own funds
+
+---
+
+## 🤖 MCP Integration (Optional)
+
+This template includes MCP (Model Context Protocol) integration for AI-powered on-chain operations.
+
+Use Claude, Cursor, or VS Code to interact with Injective using natural language:
+
+```
+"Check my USDC balance"
+"Deposit 5 USDC into the vault"
+"What's the total vault balance?"
+```
+
+See [mcp/README.md](./mcp/README.md) for setup instructions.
+
+---
+
+## 🚢 Deployment (Advanced)
+
+The vault contract is **already deployed** for you. If you want to deploy your own version:
 
 ```bash
-cd contracts && npm run compile && npm run test && npm run deploy:testnet
+cd contracts
+npm install
+cp .env.example .env
+
+# Add your deployer private key to .env
+# PRIVATE_KEY=0x...
+
+# Deploy
+npx hardhat run scripts/deploy.ts --network injectiveTestnet
+
+# Copy the deployed address into frontend/.env
 ```
 
 ---
 
-## MCP Integration
+## 📚 Learn More
 
-Connect AI tools (Claude, Cursor, VS Code) to Injective via the [Injective MCP Server](https://github.com/InjectiveLabs/mcp-server).
-
-```bash
-npm run mcp:setup
-```
-
-Add to your AI client config:
-
-```json
-{
-  "mcpServers": {
-    "injective": {
-      "command": "node",
-      "args": ["/path/to/mcp/injective-mcp-server/dist/mcp/server.js"],
-      "env": { "INJECTIVE_NETWORK": "testnet" }
-    }
-  }
-}
-```
-
-See [`mcp/README.md`](./mcp/README.md) for details.
+- [Injective EVM Docs](https://docs.injective.network/developers-evm/)
+- [USDC on Injective](https://docs.injective.network/developers-defi/usdc-stablecoin)
+- [wagmi Documentation](https://wagmi.sh/)
+- [Vite Guide](https://vitejs.dev/guide/)
 
 ---
 
-## Deploy to Mainnet
+## 📄 License
 
-Update `.env`:
-
-```env
-VITE_CHAIN_ID=1776
-VITE_RPC_URL=https://sentry.evm-rpc.injective.network/
-VITE_USDC_ADDRESS=0xa00C59fF5a080D2b954d0c75e46E22a0c371235a
-```
-
-Then run `npm run deploy:mainnet`.
+MIT
 
 ---
 
-MIT © [Chuhan Jin](https://github.com/ChuhanJin)
+<div align="center">
+  <p>Built with ❤️ for Injective</p>
+  <p>
+    <a href="https://discord.gg/injective">Discord</a> ·
+    <a href="https://twitter.com/InjectiveLabs">Twitter</a> ·
+    <a href="https://github.com/InjectiveLabs">GitHub</a>
+  </p>
+</div>

@@ -1,8 +1,7 @@
 import { Link } from "react-router-dom";
 import { ConnectWallet } from "@/components/ConnectWallet";
 import { NetworkBadge } from "@/components/NetworkBadge";
-import { PaymentForm } from "@/components/PaymentForm";
-import { TransactionHistory } from "@/components/TransactionHistory";
+import { VaultForm } from "@/components/VaultForm";
 import { useWallet } from "@/hooks/useWallet";
 import { IS_CONTRACT_CONFIGURED } from "@/config/contracts";
 
@@ -33,16 +32,16 @@ export function Dashboard() {
         {!IS_CONTRACT_CONFIGURED && (
           <div className="mb-inj-lg rounded-inj-md border border-amber-400/40 bg-amber-50 px-inj-lg py-inj-md">
             <p className="font-marist text-sm font-semibold text-amber-800 mb-1">
-              ⚠️ Contract not configured
+              ⚠️ Vault contract not configured
             </p>
             <p className="font-whyte text-label-sm text-amber-700">
-              Deploy the contract first, then set{" "}
-              <code className="font-mono bg-amber-100 px-1 rounded">VITE_PAYMENT_PROCESSOR_ADDRESS</code>{" "}
-              in your <code className="font-mono bg-amber-100 px-1 rounded">.env</code> file and restart the dev server.
+              The USDC Vault is already deployed on Injective EVM Testnet.
+              Set the contract address in your{" "}
+              <code className="font-mono bg-amber-100 px-1 rounded">.env</code> file:
             </p>
             <pre className="mt-inj-sm font-mono text-xs text-amber-800 bg-amber-100 rounded p-inj-sm overflow-x-auto">
-              cd contracts && npm run deploy:testnet{"\n"}
-              # Copy the printed address into frontend/.env
+              # frontend/.env{"\n"}
+              VITE_VAULT_ADDRESS=&lt;deployed_vault_address&gt;
             </pre>
           </div>
         )}
@@ -50,7 +49,7 @@ export function Dashboard() {
           /* Not connected state */
           <div className="flex flex-col items-center justify-center py-32 gap-inj-lg">
             <p className="font-marist text-body-md text-inj-midnight/50">
-              Connect your wallet to access the dashboard
+              Connect your wallet to access the USDC Vault
             </p>
             <ConnectWallet />
           </div>
@@ -78,36 +77,30 @@ export function Dashboard() {
               </div>
             </div>
 
-            {/* Main grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-inj-lg">
-              <div>
-                <PaymentForm />
-              </div>
+            {/* Main content */}
+            <div className="max-w-2xl mx-auto">
+              <VaultForm />
 
-              <div className="space-y-inj-lg">
-                <TransactionHistory />
-
-                {/* MCP card */}
-                <div className="card border border-inj-ocean/20">
-                  <div className="flex items-center gap-inj-sm mb-inj-sm">
-                    <span className="tag-builder">AI</span>
-                    <h3 className="font-marist text-base font-bold text-inj-snow">
-                      MCP Integration
-                    </h3>
-                  </div>
-                  <p className="font-marist text-body-md text-inj-snow/60 mb-inj-md">
-                    Connect Claude, Cursor, or VS Code to Injective via the MCP
-                    server for natural language on-chain operations.
-                  </p>
-                  <a
-                    href="https://github.com/InjectiveLabs/mcp-server"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-whyte text-label-sm text-inj-ocean hover:underline"
-                  >
-                    Set up MCP →
-                  </a>
+              {/* MCP card */}
+              <div className="card border border-inj-ocean/20 mt-inj-xl">
+                <div className="flex items-center gap-inj-sm mb-inj-sm">
+                  <span className="tag-builder">AI</span>
+                  <h3 className="font-marist text-base font-bold text-inj-snow">
+                    MCP Integration
+                  </h3>
                 </div>
+                <p className="font-marist text-body-md text-inj-snow/60 mb-inj-md">
+                  Connect Claude, Cursor, or VS Code to Injective via the MCP
+                  server for natural language on-chain operations.
+                </p>
+                <a
+                  href="https://github.com/InjectiveLabs/mcp-server"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-whyte text-label-sm text-inj-ocean hover:underline"
+                >
+                  Set up MCP →
+                </a>
               </div>
             </div>
           </>
