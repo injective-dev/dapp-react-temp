@@ -24,7 +24,7 @@ export function VaultForm() {
     txHash,
   } = useUSDCVault();
 
-  // Clear form on success
+  // Clear input after tx confirmed
   useEffect(() => {
     if (isTxSuccess) {
       if (lastAction === "deposit") setDepositAmount("");
@@ -35,36 +35,24 @@ export function VaultForm() {
   const handleDeposit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLastAction("deposit");
-    try {
-      await deposit(depositAmount);
-    } catch {
-      // error shown below
-    }
+    try { await deposit(depositAmount); } catch { /* shown below */ }
   };
 
   const handleWithdraw = async (e: React.FormEvent) => {
     e.preventDefault();
     setLastAction("withdraw");
-    try {
-      await withdraw(withdrawAmount);
-    } catch {
-      // error shown below
-    }
+    try { await withdraw(withdrawAmount); } catch { /* shown below */ }
   };
 
   const handleWithdrawAll = async () => {
     setLastAction("withdraw");
-    try {
-      await withdrawAll();
-    } catch {
-      // error shown below
-    }
+    try { await withdrawAll(); } catch { /* shown below */ }
   };
 
   if (!isConnected) {
     return (
       <div className="card flex items-center justify-center min-h-[120px]">
-        <p className="text-inj-snow/60 font-marist text-body-md">
+        <p className="text-inj-muted font-marist text-body-md">
           Connect your wallet to use the vault
         </p>
       </div>
@@ -73,7 +61,7 @@ export function VaultForm() {
 
   if (!isOnCorrectNetwork) {
     return (
-      <div className="rounded-inj-md p-inj-lg border border-inj-sand/60 bg-inj-sand/10 text-inj-cinnamon text-center font-marist">
+      <div className="card border-inj-amber/40 text-inj-amber text-center">
         Switch to Injective Testnet to continue
       </div>
     );
@@ -89,39 +77,45 @@ export function VaultForm() {
         <h2 className="font-marist text-xl font-bold text-inj-snow mb-inj-md">
           USDC Vault
         </h2>
-        <div className="grid grid-cols-3 gap-inj-md">
-          <div className="bg-inj-midnight/60 rounded-inj-md p-inj-md border border-inj-snow/10">
-            <p className="font-whyte text-label-sm text-inj-snow/50 mb-1">Your Wallet</p>
-            <p className="font-marist text-lg font-semibold text-inj-snow">
+
+        <div className="grid grid-cols-3 gap-3">
+          {/* Wallet */}
+          <div className="card-inner">
+            <p className="font-whyte text-label-sm text-inj-muted mb-1">Your Wallet</p>
+            <p className="font-marist text-lg font-bold text-inj-snow">
               {parseFloat(usdcBalanceFormatted).toFixed(2)}
             </p>
-            <p className="font-whyte text-label-xs text-inj-snow/30">USDC</p>
+            <p className="font-whyte text-label-xs text-inj-muted">USDC</p>
           </div>
-          <div className="bg-inj-midnight/60 rounded-inj-md p-inj-md border border-inj-lime/20">
-            <p className="font-whyte text-label-sm text-inj-snow/50 mb-1">Your Deposit</p>
-            <p className="font-marist text-lg font-semibold text-inj-lime">
+
+          {/* Your Deposit */}
+          <div className="card-inner border-inj-lime/30">
+            <p className="font-whyte text-label-sm text-inj-muted mb-1">Your Deposit</p>
+            <p className="font-marist text-lg font-bold text-inj-lime">
               {parseFloat(userDepositFormatted).toFixed(2)}
             </p>
-            <p className="font-whyte text-label-xs text-inj-snow/30">USDC</p>
+            <p className="font-whyte text-label-xs text-inj-muted">USDC</p>
           </div>
-          <div className="bg-inj-midnight/60 rounded-inj-md p-inj-md border border-inj-ocean/20">
-            <p className="font-whyte text-label-sm text-inj-snow/50 mb-1">Total in Vault</p>
-            <p className="font-marist text-lg font-semibold text-inj-ocean">
+
+          {/* Total in Vault */}
+          <div className="card-inner border-inj-ocean/30">
+            <p className="font-whyte text-label-sm text-inj-muted mb-1">Total in Vault</p>
+            <p className="font-marist text-lg font-bold text-inj-ocean">
               {parseFloat(vaultBalanceFormatted).toFixed(2)}
             </p>
-            <p className="font-whyte text-label-xs text-inj-snow/30">USDC</p>
+            <p className="font-whyte text-label-xs text-inj-muted">USDC</p>
           </div>
         </div>
 
-        {/* Circle Faucet */}
+        {/* Faucet link */}
         <a
           href="https://faucet.circle.com/"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center justify-center gap-2 w-full mt-inj-md
-                     border border-inj-snow/20 rounded-inj-md py-2.5
-                     font-whyte text-label-sm text-inj-snow/70
-                     hover:border-inj-snow/50 hover:text-inj-snow transition-colors"
+                     border border-inj-border rounded-inj-md py-2.5
+                     font-whyte text-label-sm text-inj-muted
+                     hover:border-inj-ocean/50 hover:text-inj-snow transition-colors"
         >
           <span className="text-inj-lime">💧</span>
           Get Testnet USDC — Circle Faucet
@@ -132,24 +126,17 @@ export function VaultForm() {
         </a>
       </div>
 
-      {/* ── Tx Status Banner ── */}
+      {/* ── TX Status Banners ── */}
       {txHash && isTxPending && (
-        <div className="rounded-inj-md px-inj-md py-inj-sm
-                        bg-inj-ocean/10 border border-inj-ocean/40
-                        font-whyte text-label-sm text-inj-ocean
-                        flex items-center gap-2">
+        <div className="banner-pending flex items-center gap-2">
           <svg className="w-4 h-4 animate-spin flex-shrink-0" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
           </svg>
           <span>
             Waiting for confirmation…{" "}
-            <a
-              href={`${EXPLORER}/tx/${txHash}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline hover:opacity-80"
-            >
+            <a href={`${EXPLORER}/tx/${txHash}`} target="_blank" rel="noopener noreferrer"
+               className="underline font-semibold hover:opacity-80">
               View tx →
             </a>
           </span>
@@ -157,35 +144,23 @@ export function VaultForm() {
       )}
 
       {txHash && isTxSuccess && (
-        <div className="rounded-inj-md px-inj-md py-inj-sm
-                        bg-inj-lime/10 border border-inj-lime/40
-                        font-whyte text-label-sm text-inj-lime space-y-1">
+        <div className="banner-success space-y-1">
           <div className="flex items-center gap-2">
             <span>✅</span>
-            <span>
+            <span className="font-semibold">
               Transaction confirmed!{" "}
-              <a
-                href={`${EXPLORER}/tx/${txHash}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline hover:opacity-80"
-              >
+              <a href={`${EXPLORER}/tx/${txHash}`} target="_blank" rel="noopener noreferrer"
+                 className="underline hover:opacity-80">
                 View on Explorer →
               </a>
             </span>
           </div>
-          <p className="font-mono text-xs text-inj-lime/60 break-all pl-6">
-            {txHash}
-          </p>
+          <p className="font-mono text-xs opacity-70 break-all pl-6">{txHash}</p>
         </div>
       )}
 
       {error && (
-        <div className="rounded-inj-md px-inj-md py-inj-sm
-                        bg-inj-coral/10 border border-inj-coral/30
-                        font-whyte text-label-sm text-inj-coral">
-          {error}
-        </div>
+        <div className="banner-error">{error}</div>
       )}
 
       {/* ── Deposit ── */}
@@ -195,33 +170,25 @@ export function VaultForm() {
         </h3>
         <form onSubmit={handleDeposit} className="space-y-inj-md">
           <div>
-            <label className="block font-whyte text-label-sm text-inj-snow/60 mb-2">
+            <label className="block font-whyte text-label-sm text-inj-muted mb-2">
               Amount (USDC)
             </label>
             <input
               type="number"
               value={depositAmount}
               onChange={(e) => setDepositAmount(e.target.value)}
-              placeholder="Enter amount to deposit"
+              placeholder="0.00"
               min="0.01"
               step="0.01"
               required
               disabled={busy}
-              className="w-full bg-inj-midnight/60 border border-inj-snow/15
-                         rounded-inj-md px-inj-md py-inj-sm
-                         text-inj-snow font-marist placeholder-inj-snow/30
-                         focus:outline-none focus:border-inj-ocean transition-colors
-                         disabled:opacity-50"
+              className="input-dark"
             />
-            <p className="font-whyte text-label-xs text-inj-snow/40 mt-1">
-              Wallet balance: {parseFloat(usdcBalanceFormatted).toFixed(2)} USDC
+            <p className="font-whyte text-label-xs text-inj-muted mt-1">
+              Wallet: {parseFloat(usdcBalanceFormatted).toFixed(2)} USDC available
             </p>
           </div>
-          <button
-            type="submit"
-            disabled={busy || !depositAmount}
-            className="btn-primary w-full"
-          >
+          <button type="submit" disabled={busy || !depositAmount} className="btn-primary w-full">
             {isLoading && lastAction === "deposit"
               ? "Sending…"
               : isTxPending && lastAction === "deposit"
@@ -238,35 +205,27 @@ export function VaultForm() {
         </h3>
         <form onSubmit={handleWithdraw} className="space-y-inj-md">
           <div>
-            <label className="block font-whyte text-label-sm text-inj-snow/60 mb-2">
+            <label className="block font-whyte text-label-sm text-inj-muted mb-2">
               Amount (USDC)
             </label>
             <input
               type="number"
               value={withdrawAmount}
               onChange={(e) => setWithdrawAmount(e.target.value)}
-              placeholder="Enter amount to withdraw"
+              placeholder="0.00"
               min="0.01"
               step="0.01"
               max={userDepositFormatted}
               required
               disabled={busy}
-              className="w-full bg-inj-midnight/60 border border-inj-snow/15
-                         rounded-inj-md px-inj-md py-inj-sm
-                         text-inj-snow font-marist placeholder-inj-snow/30
-                         focus:outline-none focus:border-inj-ocean transition-colors
-                         disabled:opacity-50"
+              className="input-dark"
             />
-            <p className="font-whyte text-label-xs text-inj-snow/40 mt-1">
-              Available: {parseFloat(userDepositFormatted).toFixed(2)} USDC
+            <p className="font-whyte text-label-xs text-inj-muted mt-1">
+              Available: {parseFloat(userDepositFormatted).toFixed(2)} USDC in vault
             </p>
           </div>
           <div className="flex gap-inj-sm">
-            <button
-              type="submit"
-              disabled={busy || !withdrawAmount}
-              className="btn-primary flex-1"
-            >
+            <button type="submit" disabled={busy || !withdrawAmount} className="btn-primary flex-1">
               {isLoading && lastAction === "withdraw"
                 ? "Sending…"
                 : isTxPending && lastAction === "withdraw"
