@@ -31,21 +31,6 @@ export const injectiveTestnet = defineChain({
   testnet: true,
 });
 
-/**
- * Injective EVM Mainnet
- * Chain ID: 1776 | RPC: https://sentry.evm-rpc.injective.network/
- */
-// export const injectiveMainnet = defineChain({
-//   id: 1776,
-//   name: "Injective",
-//   nativeCurrency: { name: "Injective", symbol: "INJ", decimals: 18 },
-//   rpcUrls: {
-//     default: { http: ["https://sentry.evm-rpc.injective.network/"] },
-//   },
-//   blockExplorers: {
-//     default: { name: "Injective Explorer", url: "https://blockscout.injective.network/" },
-//   },
-// });
 
 export const wagmiConfig = createConfig({
   chains: [injectiveTestnet],

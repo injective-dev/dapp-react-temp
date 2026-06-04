@@ -20,11 +20,11 @@ export const CONTRACT_ADDRESSES = {
 
 /**
  * True when vault address is a real deployed address.
+ * The vault is already deployed — this is always true unless someone overrides to zero address.
  */
 export const IS_CONTRACT_CONFIGURED =
-  !!import.meta.env.VITE_VAULT_ADDRESS &&
-  import.meta.env.VITE_VAULT_ADDRESS !== "0xc79efba3814eedb4b8b85651bc6668198e46ac5a" &&
-  import.meta.env.VITE_VAULT_ADDRESS !== "0x0000000000000000000000000000000000000000";
+  VAULT_ADDRESS !== "0x0000000000000000000000000000000000000000" &&
+  VAULT_ADDRESS !== ("0x" as `0x${string}`);
 
 /**
  * Standard ERC20 ABI — functions needed for USDC interactions

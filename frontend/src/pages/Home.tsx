@@ -4,9 +4,9 @@ import { useWallet } from "@/hooks/useWallet";
 
 const features = [
   {
-    tag: "Payments",
-    title: "USDC Payments",
-    desc: "Accept USDC payments on Injective EVM testnet using the official Circle USDC deployment.",
+    tag: "Vault",
+    title: "USDC Vault",
+    desc: "Deposit and withdraw USDC on Injective EVM testnet. Contract already deployed — no setup needed.",
   },
   {
     tag: "AI",
@@ -16,12 +16,12 @@ const features = [
   {
     tag: "Frontend",
     title: "React + wagmi v2",
-    desc: "Vite, React 18, TypeScript, Tailwind CSS. Pre-configured for Injective EVM testnet and mainnet.",
+    desc: "Vite, React 18, TypeScript, Tailwind CSS. Pre-configured for Injective EVM testnet.",
   },
   {
     tag: "Contracts",
     title: "Hardhat Ready",
-    desc: "Solidity contracts with deploy scripts and tests. One command to ship to testnet.",
+    desc: "Solidity contracts with deploy scripts and tests. Vault already deployed on testnet.",
   },
 ];
 
@@ -106,14 +106,11 @@ export function Home() {
         </h2>
         <div className="bg-inj-midnight rounded-inj-md p-inj-xl overflow-x-auto">
           <pre className="font-mono text-sm text-inj-snow/80 space-y-1">
-            <div><span className="text-inj-snow/40"># 1. Click "Use this template" on GitHub, then clone your new repo</span></div>
-            <div className="text-inj-snow">git clone https://github.com/&lt;you&gt;/&lt;your-repo&gt; &amp;&amp; <span className="text-inj-ocean">cd</span> &lt;your-repo&gt;</div>
-            <div className="mt-3"><span className="text-inj-snow/40"># 2. Deploy contracts</span></div>
-            <div><span className="text-inj-ocean">cd</span> contracts &amp;&amp; cp .env.example .env <span className="text-inj-snow/40"># add PRIVATE_KEY</span></div>
-            <div>npm install &amp;&amp; npm run deploy:testnet</div>
-            <div className="mt-3"><span className="text-inj-snow/40"># 3. Configure frontend &amp; run</span></div>
-            <div><span className="text-inj-ocean">cd</span> ../frontend &amp;&amp; cp .env.example .env <span className="text-inj-snow/40"># add VITE_PAYMENT_PROCESSOR_ADDRESS</span></div>
+            <div><span className="text-inj-snow/40"># 1. Clone the repo</span></div>
+            <div className="text-inj-snow">git clone https://github.com/&lt;you&gt;/&lt;your-repo&gt; &amp;&amp; <span className="text-inj-ocean">cd</span> &lt;your-repo&gt;/frontend</div>
+            <div className="mt-3"><span className="text-inj-snow/40"># 2. Install and run — no contract deployment needed!</span></div>
             <div>npm install &amp;&amp; npm run dev</div>
+            <div className="mt-3"><span className="text-inj-snow/40"># Vault contract is already deployed on Injective EVM Testnet ✅</span></div>
           </pre>
         </div>
       </section>

@@ -200,15 +200,9 @@ The vault contract is **already deployed** for you. If you want to deploy your o
 ```bash
 cd contracts
 npm install
-cp .env.example .env
 
-# Add your deployer private key to .env
-# PRIVATE_KEY=0x...
-
-# Deploy
+# Deploy (needs a funded wallet — add PRIVATE_KEY to contracts/.env)
 npx hardhat run scripts/deploy.ts --network injectiveTestnet
-
-# Copy the deployed address into frontend/.env
 ```
 
 ---
