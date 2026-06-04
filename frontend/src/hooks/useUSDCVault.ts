@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useReadContract, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import { parseUnits, formatUnits, maxUint256 } from "viem";
 import { CONTRACT_ADDRESSES, ERC20_ABI, VAULT_ABI, IS_CONTRACT_CONFIGURED } from "@/config/contracts";
@@ -11,7 +11,7 @@ export function useUSDCVault() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Read user's USDC wallet balance
+  // ── Read: user USDC wallet balance ──────────────────────────────────────
   const { data: usdcBalance, refetch: refetchUsdcBalance } = useReadContract({
     address: CONTRACT_ADDRESSES.USDC,
     abi: ERC20_ABI,
@@ -20,7 +20,7 @@ export function useUSDCVault() {
     query: { enabled: !!address },
   });
 
-  // Read USDC allowance for the vault
+  // ── Read: USDC allowance for the vault ──────────────────────────────────
   const { data: allowance, refetch: refetchAllowance } = useReadContract({
     address: CONTRACT_ADDRESSES.USDC,
     abi: ERC20_ABI,
@@ -29,7 +29,7 @@ export function useUSDCVault() {
     query: { enabled: !!address },
   });
 
-  // Read user's deposited balance in the vault
+  // ── Read: user's deposited balance ──────────────────────────────────────
   const { data: userDeposit, refetch: refetchUserDeposit } = useReadContract({
     address: CONTRACT_ADDRESSES.VAULT,
     abi: VAULT_ABI,
@@ -38,30 +38,45 @@ export function useUSDCVault() {
     query: { enabled: !!address },
   });
 
-  // Read total USDC held by the vault
+  // ── Read: total USDC held by the vault ──────────────────────────────────
   const { data: vaultBalance, refetch: refetchVaultBalance } = useReadContract({
     address: CONTRACT_ADDRESSES.VAULT,
     abi: VAULT_ABI,
     functionName: "getVaultBalance",
   });
 
-  // Read total deposited (sum of all user deposits)
+  // ── Read: total deposited across all users ──────────────────────────────
   const { data: totalDeposited } = useReadContract({
     address: CONTRACT_ADDRESSES.VAULT,
     abi: VAULT_ABI,
     functionName: "totalDeposited",
   });
 
-  // Wait for tx confirmation
-  const { isSuccess: isTxSuccess } = useWaitForTransactionReceipt({ hash: txHash });
+  // ── Wait for confirmation ────────────────────────────────────────────────
+  const { isSuccess: isTxSuccess, isLoading: isTxPending } = useWaitForTransactionReceipt({
+    hash: txHash,
+  });
+
+  // ── Auto-refetch all balances after tx confirmed ─────────────────────────
+  useEffect(() => {
+    if (isTxSuccess) {
+      refetchUsdcBalance();
+      refetchAllowance();
+      refetchUserDeposit();
+      refetchVaultBalance();
+    }
+  }, [isTxSuccess]);
 
   const refetchAll = async () => {
-    await Promise.all([refetchUsdcBalance(), refetchAllowance(), refetchUserDeposit(), refetchVaultBalance()]);
+    await Promise.all([
+      refetchUsdcBalance(),
+      refetchAllowance(),
+      refetchUserDeposit(),
+      refetchVaultBalance(),
+    ]);
   };
 
-  /**
-   * Approve the vault to spend USDC on user's behalf (max allowance)
-   */
+  // ── Approve vault to spend USDC ─────────────────────────────────────────
   const approveUSDC = async () => {
     setIsLoading(true);
     setError(null);
@@ -72,6 +87,7 @@ export function useUSDCVault() {
         functionName: "approve",
         args: [CONTRACT_ADDRESSES.VAULT, maxUint256],
       });
+      // wait for approval tx before proceeding
       setTxHash(hash);
       await refetchAllowance();
     } catch (err) {
@@ -82,17 +98,9 @@ export function useUSDCVault() {
     }
   };
 
-  /**
-   * Deposit USDC into the vault.
-   * Auto-approves if allowance is insufficient.
-   * @param amountStr — human-readable USDC amount (e.g. "10" for 10 USDC)
-   */
+  // ── Deposit ──────────────────────────────────────────────────────────────
   const deposit = async (amountStr: string) => {
-    if (!IS_CONTRACT_CONFIGURED) {
-      const msg = "Vault contract not configured.";
-      setError(msg);
-      throw new Error(msg);
-    }
+    if (!IS_CONTRACT_CONFIGURED) throw new Error("Vault not configured");
     setIsLoading(true);
     setError(null);
     try {
@@ -100,7 +108,16 @@ export function useUSDCVault() {
 
       // Auto-approve if needed
       if (!allowance || (allowance as bigint) < amount) {
-        await approveUSDC();
+        const approveHash = await writeContractAsync({
+          address: CONTRACT_ADDRESSES.USDC,
+          abi: ERC20_ABI,
+          functionName: "approve",
+          args: [CONTRACT_ADDRESSES.VAULT, maxUint256],
+        });
+        setTxHash(approveHash);
+        // small pause to let approval propagate
+        await new Promise(r => setTimeout(r, 2000));
+        await refetchAllowance();
       }
 
       const hash = await writeContractAsync({
@@ -110,7 +127,6 @@ export function useUSDCVault() {
         args: [amount],
       });
       setTxHash(hash);
-      await refetchAll();
       return hash;
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Deposit failed";
@@ -121,16 +137,9 @@ export function useUSDCVault() {
     }
   };
 
-  /**
-   * Withdraw a specific amount of USDC from the vault.
-   * @param amountStr — human-readable USDC amount (e.g. "5" for 5 USDC)
-   */
+  // ── Withdraw ─────────────────────────────────────────────────────────────
   const withdraw = async (amountStr: string) => {
-    if (!IS_CONTRACT_CONFIGURED) {
-      const msg = "Vault contract not configured.";
-      setError(msg);
-      throw new Error(msg);
-    }
+    if (!IS_CONTRACT_CONFIGURED) throw new Error("Vault not configured");
     setIsLoading(true);
     setError(null);
     try {
@@ -142,7 +151,6 @@ export function useUSDCVault() {
         args: [amount],
       });
       setTxHash(hash);
-      await refetchAll();
       return hash;
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Withdrawal failed";
@@ -153,15 +161,9 @@ export function useUSDCVault() {
     }
   };
 
-  /**
-   * Withdraw all deposited USDC from the vault.
-   */
+  // ── Withdraw all ─────────────────────────────────────────────────────────
   const withdrawAll = async () => {
-    if (!IS_CONTRACT_CONFIGURED) {
-      const msg = "Vault contract not configured.";
-      setError(msg);
-      throw new Error(msg);
-    }
+    if (!IS_CONTRACT_CONFIGURED) throw new Error("Vault not configured");
     setIsLoading(true);
     setError(null);
     try {
@@ -171,7 +173,6 @@ export function useUSDCVault() {
         functionName: "withdrawAll",
       });
       setTxHash(hash);
-      await refetchAll();
       return hash;
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Withdrawal failed";
@@ -200,11 +201,12 @@ export function useUSDCVault() {
     withdraw,
     withdrawAll,
     approveUSDC,
-    // State
-    isLoading,
-    error,
+    // Tx state
     txHash,
-    isTxSuccess,
+    isTxPending,   // tx sent, waiting for confirmation
+    isTxSuccess,   // tx confirmed on-chain
+    isLoading,     // local async state
+    error,
     refetchAll,
   };
 }

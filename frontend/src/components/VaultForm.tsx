@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUSDCVault } from "@/hooks/useUSDCVault";
 import { useWallet } from "@/hooks/useWallet";
+
+const EXPLORER = "https://testnet.blockscout.injective.network";
 
 export function VaultForm() {
   const [depositAmount, setDepositAmount] = useState("");
   const [withdrawAmount, setWithdrawAmount] = useState("");
-  const [success, setSuccess] = useState<string | null>(null);
+  const [lastAction, setLastAction] = useState<"deposit" | "withdraw" | null>(null);
 
   const { isConnected, isOnCorrectNetwork } = useWallet();
   const {
@@ -16,41 +18,46 @@ export function VaultForm() {
     withdraw,
     withdrawAll,
     isLoading,
+    isTxPending,
+    isTxSuccess,
     error,
     txHash,
   } = useUSDCVault();
 
+  // Clear form on success
+  useEffect(() => {
+    if (isTxSuccess) {
+      if (lastAction === "deposit") setDepositAmount("");
+      if (lastAction === "withdraw") setWithdrawAmount("");
+    }
+  }, [isTxSuccess]);
+
   const handleDeposit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSuccess(null);
+    setLastAction("deposit");
     try {
-      const hash = await deposit(depositAmount);
-      setSuccess(hash);
-      setDepositAmount("");
+      await deposit(depositAmount);
     } catch {
-      // error set in hook
+      // error shown below
     }
   };
 
   const handleWithdraw = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSuccess(null);
+    setLastAction("withdraw");
     try {
-      const hash = await withdraw(withdrawAmount);
-      setSuccess(hash);
-      setWithdrawAmount("");
+      await withdraw(withdrawAmount);
     } catch {
-      // error set in hook
+      // error shown below
     }
   };
 
   const handleWithdrawAll = async () => {
-    setSuccess(null);
+    setLastAction("withdraw");
     try {
-      const hash = await withdrawAll();
-      setSuccess(hash);
+      await withdrawAll();
     } catch {
-      // error set in hook
+      // error shown below
     }
   };
 
@@ -72,9 +79,12 @@ export function VaultForm() {
     );
   }
 
+  const busy = isLoading || isTxPending;
+
   return (
     <div className="space-y-inj-lg">
-      {/* Vault Stats Card */}
+
+      {/* ── Vault Stats ── */}
       <div className="card">
         <h2 className="font-marist text-xl font-bold text-inj-snow mb-inj-md">
           USDC Vault
@@ -103,7 +113,7 @@ export function VaultForm() {
           </div>
         </div>
 
-        {/* Circle Faucet Link */}
+        {/* Circle Faucet */}
         <a
           href="https://faucet.circle.com/"
           target="_blank"
@@ -122,7 +132,63 @@ export function VaultForm() {
         </a>
       </div>
 
-      {/* Deposit Form */}
+      {/* ── Tx Status Banner ── */}
+      {txHash && isTxPending && (
+        <div className="rounded-inj-md px-inj-md py-inj-sm
+                        bg-inj-ocean/10 border border-inj-ocean/40
+                        font-whyte text-label-sm text-inj-ocean
+                        flex items-center gap-2">
+          <svg className="w-4 h-4 animate-spin flex-shrink-0" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+          </svg>
+          <span>
+            Waiting for confirmation…{" "}
+            <a
+              href={`${EXPLORER}/tx/${txHash}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:opacity-80"
+            >
+              View tx →
+            </a>
+          </span>
+        </div>
+      )}
+
+      {txHash && isTxSuccess && (
+        <div className="rounded-inj-md px-inj-md py-inj-sm
+                        bg-inj-lime/10 border border-inj-lime/40
+                        font-whyte text-label-sm text-inj-lime space-y-1">
+          <div className="flex items-center gap-2">
+            <span>✅</span>
+            <span>
+              Transaction confirmed!{" "}
+              <a
+                href={`${EXPLORER}/tx/${txHash}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:opacity-80"
+              >
+                View on Explorer →
+              </a>
+            </span>
+          </div>
+          <p className="font-mono text-xs text-inj-lime/60 break-all pl-6">
+            {txHash}
+          </p>
+        </div>
+      )}
+
+      {error && (
+        <div className="rounded-inj-md px-inj-md py-inj-sm
+                        bg-inj-coral/10 border border-inj-coral/30
+                        font-whyte text-label-sm text-inj-coral">
+          {error}
+        </div>
+      )}
+
+      {/* ── Deposit ── */}
       <div className="card">
         <h3 className="font-marist text-lg font-bold text-inj-snow mb-inj-md">
           Deposit USDC
@@ -140,23 +206,32 @@ export function VaultForm() {
               min="0.01"
               step="0.01"
               required
+              disabled={busy}
               className="w-full bg-inj-midnight/60 border border-inj-snow/15
                          rounded-inj-md px-inj-md py-inj-sm
                          text-inj-snow font-marist placeholder-inj-snow/30
-                         focus:outline-none focus:border-inj-ocean transition-colors"
+                         focus:outline-none focus:border-inj-ocean transition-colors
+                         disabled:opacity-50"
             />
+            <p className="font-whyte text-label-xs text-inj-snow/40 mt-1">
+              Wallet balance: {parseFloat(usdcBalanceFormatted).toFixed(2)} USDC
+            </p>
           </div>
           <button
             type="submit"
-            disabled={isLoading || !depositAmount}
+            disabled={busy || !depositAmount}
             className="btn-primary w-full"
           >
-            {isLoading ? "Processing…" : `Deposit ${depositAmount || "0"} USDC`}
+            {isLoading && lastAction === "deposit"
+              ? "Sending…"
+              : isTxPending && lastAction === "deposit"
+              ? "Confirming…"
+              : `Deposit ${depositAmount || "0"} USDC`}
           </button>
         </form>
       </div>
 
-      {/* Withdraw Form */}
+      {/* ── Withdraw ── */}
       <div className="card">
         <h3 className="font-marist text-lg font-bold text-inj-snow mb-inj-md">
           Withdraw USDC
@@ -175,10 +250,12 @@ export function VaultForm() {
               step="0.01"
               max={userDepositFormatted}
               required
+              disabled={busy}
               className="w-full bg-inj-midnight/60 border border-inj-snow/15
                          rounded-inj-md px-inj-md py-inj-sm
                          text-inj-snow font-marist placeholder-inj-snow/30
-                         focus:outline-none focus:border-inj-ocean transition-colors"
+                         focus:outline-none focus:border-inj-ocean transition-colors
+                         disabled:opacity-50"
             />
             <p className="font-whyte text-label-xs text-inj-snow/40 mt-1">
               Available: {parseFloat(userDepositFormatted).toFixed(2)} USDC
@@ -187,51 +264,26 @@ export function VaultForm() {
           <div className="flex gap-inj-sm">
             <button
               type="submit"
-              disabled={isLoading || !withdrawAmount}
+              disabled={busy || !withdrawAmount}
               className="btn-primary flex-1"
             >
-              {isLoading ? "Processing…" : `Withdraw ${withdrawAmount || "0"} USDC`}
+              {isLoading && lastAction === "withdraw"
+                ? "Sending…"
+                : isTxPending && lastAction === "withdraw"
+                ? "Confirming…"
+                : `Withdraw ${withdrawAmount || "0"} USDC`}
             </button>
             <button
               type="button"
               onClick={handleWithdrawAll}
-              disabled={isLoading || parseFloat(userDepositFormatted) === 0}
+              disabled={busy || parseFloat(userDepositFormatted) === 0}
               className="btn-secondary px-inj-lg"
             >
-              Withdraw All
+              All
             </button>
           </div>
         </form>
       </div>
-
-      {/* Status Messages */}
-      {error && (
-        <div className="rounded-inj-md px-inj-md py-inj-sm bg-inj-coral/10 border border-inj-coral/30
-                        font-whyte text-label-sm text-inj-coral">
-          {error}
-        </div>
-      )}
-
-      {success && (
-        <div className="rounded-inj-md px-inj-md py-inj-sm bg-inj-lime/10 border border-inj-lime/30
-                        font-whyte text-label-sm text-inj-lime">
-          Transaction successful!{" "}
-          <a
-            href={`https://testnet.blockscout.injective.network/tx/${success}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline hover:opacity-80"
-          >
-            View on Explorer →
-          </a>
-        </div>
-      )}
-
-      {txHash && (
-        <p className="font-whyte text-label-sm text-inj-snow/30 break-all">
-          Tx: {txHash}
-        </p>
-      )}
     </div>
   );
 }
