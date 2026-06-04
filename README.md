@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./logo.jpg" alt="Logo" width="120" />
+  <img src="./frontend/public/logo.jpg" alt="Logo" width="120" style="border-radius:16px" />
 
   <h1>Injective dApp React Template</h1>
 
