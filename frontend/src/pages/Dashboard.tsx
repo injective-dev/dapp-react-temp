@@ -12,12 +12,11 @@ export function Dashboard() {
       {/* Header */}
       <header className="bg-inj-midnight/80 backdrop-blur-sm border-b border-inj-border sticky top-0 z-10">
         <div className="max-w-5xl mx-auto px-inj-lg h-16 flex items-center justify-between">
-          <Link
-            to="/"
-            className="font-marist font-bold text-inj-snow text-lg tracking-tight
-                       hover:text-inj-muted transition-colors"
-          >
-            Injective dApp
+          <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <img src="/logo.jpg" alt="Logo" className="h-8 w-8 rounded-full object-cover" />
+            <span className="font-marist font-bold text-inj-snow text-lg tracking-tight">
+              Injective dApp
+            </span>
           </Link>
           <div className="flex items-center gap-inj-sm">
             <NetworkBadge />

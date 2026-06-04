@@ -33,9 +33,12 @@ export function Home() {
       {/* Nav */}
       <nav className="border-b border-inj-border bg-inj-midnight/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-5xl mx-auto px-inj-lg h-16 flex items-center justify-between">
-          <span className="font-marist font-bold text-inj-snow text-lg tracking-tight">
-            Injective dApp
-          </span>
+          <div className="flex items-center gap-2">
+            <img src="/logo.jpg" alt="Logo" className="h-8 w-8 rounded-full object-cover" />
+            <span className="font-marist font-bold text-inj-snow text-lg tracking-tight">
+              Injective dApp
+            </span>
+          </div>
           <ConnectWallet />
         </div>
       </nav>
@@ -43,6 +46,7 @@ export function Home() {
       {/* Hero */}
       <section className="bg-gradient-to-br from-inj-midnight via-inj-dark to-inj-dark border-b border-inj-border">
         <div className="max-w-5xl mx-auto px-inj-lg py-24 md:py-32">
+          <img src="/logo.jpg" alt="Injective dApp Logo" className="h-20 w-20 rounded-2xl object-cover mb-inj-lg shadow-lg" />
           <span className="tag-builder mb-inj-lg inline-flex">
             ⚡ Testnet Ready
           </span>
